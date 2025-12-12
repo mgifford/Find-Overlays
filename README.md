@@ -90,6 +90,10 @@ Exit the virtual environment when you’re done:
 deactivate
 ```
 
+## AI Disclosure
+
+Yes. AI was used in creating this tool. There be dragons! 
+
 
 
 
