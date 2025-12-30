@@ -1,6 +1,6 @@
 # Accessibility Overlay Scanner
 
-Scan a list of URLs (from a sitemap, CSV file, or remote URL) to detect the presence of accessibility overlays (e.g., AccessiBe, UserWay, AudioEye) and common third‑party widgets. Produces a CSV report and prints a statistical summary.
+Scan a list of URLs (from a sitemap, CSV file, or remote URL) to detect the presence of accessibility overlays (e.g., AccessiBe, UserWay, AudioEye) and common third‑party widgets. Produces a CSV report and prints a statistical summary. You can find more about [concerns with Accessibility Overlays](https://overlayfactsheet.com/) here and from the [2024 Web Almanc](https://almanac.httparchive.org/en/2024/accessibility#user-personalization-widgets-and-overlay-remediation). 
 
 ## Requirements
 - Python 3.8+
