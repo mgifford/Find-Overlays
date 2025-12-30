@@ -1,4 +1,4 @@
-# Find-Overlays
+# Find Overlays
 
 ## What this tool does
 
