@@ -32,3 +32,18 @@ Dependencies are managed with `uv`. Install and sync them with:
 ```bash
 uv sync
 ```
+
+## Security and Supply Chain Best Practices
+
+This project is public, but contributors should still follow basic security and
+legal-risk hygiene:
+
+* Treat all scanned input data and remote responses as untrusted.
+* Never commit secrets, tokens, credentials, or private data.
+* Keep dependencies pinned via `uv.lock`; update intentionally and review
+  changes before merging.
+* Run linting and tests before committing:
+  * `uv run flake8 find-overlay.py`
+  * `uv run pytest`
+* Maintain and review [`SBOM.md`](SBOM.md) so software versions and licenses are
+  documented for supply-chain and compliance tracking.
