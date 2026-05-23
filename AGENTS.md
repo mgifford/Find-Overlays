@@ -27,8 +27,8 @@ each site.  Results are written to a timestamped CSV file.
 
 ## Dependencies
 
-Runtime dependencies are listed in `requirements.txt`.  Install them with:
+Dependencies are managed with `uv`. Install and sync them with:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```

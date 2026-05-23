@@ -102,44 +102,39 @@ The detection approach is intentionally conservative. The goal is **signal**, no
 ## Installation and usage
 
 > **Note:**  
-> The installation and usage instructions below are intentionally preserved from the original README.  
-> They describe how to install dependencies, configure inputs, and run scans.
+> The installation and usage instructions below use `uv` for dependency and environment management.
 
 
 ## Requirements
-- Python 3.8+
+- Python 3.9+
 - Works on macOS/Linux/Windows. For macOS/Linux, use a virtual environment.
 
 ## Setup
-Create and activate a virtual environment, then install dependencies.
+Install and sync dependencies with `uv`.
 
 ```bash
 # From the project root
-python3 -m venv venv
-source venv/bin/activate  # macOS/Linux
-# .\venv\Scripts\activate  # Windows (PowerShell or CMD)
-
-pip install requests
+uv sync
 ```
 
 ## Usage
 You can pass a local file path (`.csv`/`.xml`/plain list) or a remote URL to a CSV/Sitemap.
 
 ```bash
-python find-overlay.py <source>
+uv run find-overlay.py <source>
 
 # Examples
-python find-overlay.py current-full.csv
-python find-overlay.py https://example.com/sitemap.xml
+uv run find-overlay.py current-full.csv
+uv run find-overlay.py https://example.com/sitemap.xml
 
 # Simple two‑column output (url, detected_overlay)
-python find-overlay.py current-full.csv --simple
+uv run find-overlay.py current-full.csv --simple
 
 # Stats only, no CSV generated
-python find-overlay.py current-full.csv --no-csv
+uv run find-overlay.py current-full.csv --no-csv
 
 # Custom output filename
-python find-overlay.py current-full.csv --output my-report.csv
+uv run find-overlay.py current-full.csv --output my-report.csv
 ```
 
 ### Sample Data
@@ -152,8 +147,8 @@ samples/sample-domains.csv
 Run against the sample:
 
 ```bash
-python find-overlay.py samples/sample-domains.csv
-python find-overlay.py samples/sample-domains.csv --limit 100
+uv run find-overlay.py samples/sample-domains.csv
+uv run find-overlay.py samples/sample-domains.csv --limit 100
 ```
 
 ### Arguments
@@ -241,7 +236,6 @@ Open source. See the repository license for details.
 ## AI Disclosure
 
 Yes. AI was used in creating this tool. There be dragons! 
-
 
 
 
