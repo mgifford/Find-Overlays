@@ -12,8 +12,8 @@ licenses, and version-control references to support legal and security review.
 ## Version-Control Snapshot
 
 * Repository: `mgifford/Find-Overlays`
-* Branch at last update: `copilot/add-agents-and-sbom-files`
-* Commit at last update: `fcf28b7fcd0f36ceda71ba68a111127c6633a37b`
+* Branch at last update: record output of `git rev-parse --abbrev-ref HEAD`
+* Commit at last update: record output of `git rev-parse HEAD`
 * Lock source: `uv.lock`
 * Requirements export source: `requirements.txt`
 
