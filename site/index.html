@@ -40,7 +40,7 @@
     <section aria-labelledby="latest-heading">
       <h2 id="latest-heading">Latest scan</h2>
       <p>Scan date: <time datetime="2026-11-09">2026-11-09</time>.
-        Built <time datetime="2026-11-09T23:44:21.451813+00:00">2026-11-09T23:44:21.451813+00:00</time>.</p>
+        Built <time datetime="2026-11-09T23:46:19.336572+00:00">2026-11-09T23:46:19.336572+00:00</time>.</p>
       <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">2</strong></li></ul>
     </section>
 
@@ -59,7 +59,8 @@
           12 sites shown
         </p>
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region"
+           aria-label="Overlay findings table, scroll horizontally if needed">
         <table>
           <caption>Overlay findings by site</caption>
           <thead>
@@ -102,7 +103,8 @@
         <a href="data/changes.json">change log JSON</a> has the full retained
         history.
       </p>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region"
+           aria-label="Recent changes table, scroll horizontally if needed">
         <table>
           <caption>Recent changes in overlay findings</caption>
           <thead>
