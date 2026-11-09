@@ -4,6 +4,8 @@ certifi==2026.10.23
     # via requests
 charset-normalizer==3.5.2
     # via requests
+defusedxml==0.7.1
+    # via find-overlays
 idna==3.20
     # via requests
 requests==2.34.2

@@ -203,7 +203,7 @@ Before opening a pull request:
 
 | Tool or workflow | Version | Scope | Trigger | Status |
 |---|---|---|---|---|
-| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, CLI smoke tests | Local / pre-PR | 58 tests passing on 2026-11-09 |
+| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, CLI smoke tests | Local / pre-PR | 59 tests passing on 2026-11-09 |
 | `flake8` | 7.5.0 (7.4.1 on Python 3.10) | Style and lint, 88-character lines | Local / pre-PR | Passing on 2026-11-09 |
 | CI workflow | — | — | — | Not configured |
 

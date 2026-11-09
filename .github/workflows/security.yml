@@ -1,0 +1,83 @@
+name: Security scans
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so newly disclosed vulnerabilities are caught without a push.
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sast:
+    name: Bandit and secret scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Bandit
+        uses: huntridge-labs/argus/.github/actions/scanner-bandit@eec3626bebc706dd4225eeec1c55e6f623c20c5f # 1.14.2
+        with:
+          post_pr_comment: "true"
+          enable_code_security: "true"
+          fail_on_severity: "high"
+          python_version: "3.12"
+          scan_path: "find-overlay.py"
+
+      - name: Run Gitleaks
+        uses: huntridge-labs/argus/.github/actions/scanner-gitleaks@eec3626bebc706dd4225eeec1c55e6f623c20c5f # 1.14.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          post_pr_comment: "true"
+          enable_code_security: "true"
+          fail_on_severity: "critical"
+
+  dependencies:
+    name: Dependency scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Run OSV-Scanner
+        uses: huntridge-labs/argus/.github/actions/scanner-osv@eec3626bebc706dd4225eeec1c55e6f623c20c5f # 1.14.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          scan_path: "."
+          fail_on_severity: "high"
+          enable_code_security: "true"
+          post_pr_comment: "true"
+
+      - name: Review dependency changes
+        if: github.event_name == 'pull_request'
+        uses: huntridge-labs/argus/.github/actions/scanner-dependency-review@eec3626bebc706dd4225eeec1c55e6f623c20c5f # 1.14.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fail_on_severity: "high"
+          enable_code_security: "true"
+          post_pr_comment: "true"

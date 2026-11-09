@@ -5,11 +5,13 @@ description = "Scan websites for accessibility overlay products and report findi
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "defusedxml>=0.7.1",
     "requests",
 ]
 
 [dependency-groups]
 dev = [
+    "bandit[toml]>=1.9.4",
     "flake8",
     "pytest",
     "pytest-cov",
@@ -18,3 +20,6 @@ dev = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]

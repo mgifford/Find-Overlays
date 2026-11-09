@@ -36,6 +36,7 @@ uv sync
 uv run find-overlay.py samples/sample-domains.csv --limit 5 --no-csv
 uv run pytest
 uv run flake8 find-overlay.py
+uv run bandit -c pyproject.toml -r find-overlay.py
 uv audit
 ```
 
@@ -119,6 +120,15 @@ new code, and fix it when a change touches the area.
   execution to parse input.
 - Update [SBOM.md](SBOM.md) when dependencies change, and keep its version
   numbers in sync with `uv.lock` and `requirements.txt`.
+- Run Bandit and the dependency audit locally before committing:
+  - `uv run bandit -c pyproject.toml -r find-overlay.py`
+  - `uv audit`
+- Do not add `# nosec` without a comment explaining the false positive. Prefer
+  fixing the finding; for example, untrusted XML is parsed with `defusedxml`,
+  not `xml.etree.ElementTree`.
+- Do not disable or weaken the scanners in
+  [`.github/workflows/security.yml`](.github/workflows/security.yml) without a
+  documented reason.
 - Run linting and tests before committing:
   - `uv run flake8 find-overlay.py`
   - `uv run pytest`
@@ -129,6 +139,7 @@ new code, and fix it when a change touches the area.
 - [ ] No function exceeds ~50 lines (docstring excluded) or 88 characters per
       line.
 - [ ] `uv run flake8 find-overlay.py` and `uv run pytest` pass.
+- [ ] `uv run bandit -c pyproject.toml -r find-overlay.py` reports no issues.
 - [ ] `uv audit` reports no known vulnerabilities.
 - [ ] Console output remains plain text and colour-independent.
 - [ ] CSV column names and encoding are unchanged, or the change is documented.

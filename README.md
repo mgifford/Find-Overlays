@@ -221,6 +221,27 @@ Find-Overlays:
 This aligns with the broader accessibility principle that tools should not introduce additional risk, surveillance, or data leakage.
 
 
+## Security checks
+
+Run the same checks locally:
+
+```bash
+uv run bandit -c pyproject.toml -r find-overlay.py
+uv audit
+```
+
+GitHub Actions runs [Argus](https://github.com/huntridge-labs/argus) scanners on
+every push and pull request, plus a weekly scheduled scan:
+
+- **Bandit** for Python security issues
+- **Gitleaks** for committed secrets
+- **OSV-Scanner** for vulnerable dependencies
+- **Dependency review** for vulnerable or disallowed licences in pull requests
+
+Findings are uploaded to the repository's Security tab when code scanning is
+available. The workflow is defined in
+[`.github/workflows/security.yml`](.github/workflows/security.yml).
+
 ## Accessibility of this tool
 
 Find-Overlays is a command-line scanner, but its own output still needs to be

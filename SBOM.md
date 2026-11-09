@@ -28,6 +28,13 @@ licenses, and version-control references to support legal and security review.
 | certifi | Runtime transitive dependency | 2026.10.23 | MPL-2.0 | `uv.lock` / metadata |
 | charset-normalizer | Runtime transitive dependency | 3.5.2 | MIT | `uv.lock` / metadata |
 | idna | Runtime transitive dependency | 3.20 | BSD-3-Clause | `uv.lock` / metadata |
+| defusedxml | Runtime dependency | 0.7.1 | PSF-2.0 | `uv.lock` / metadata |
+| bandit | Dev dependency | 1.9.4 | Apache-2.0 | `uv.lock` / metadata |
+| PyYAML | Dev transitive dependency | 6.0.3 | MIT | `uv.lock` / metadata |
+| rich | Dev transitive dependency | 15.0.0 | MIT | `uv.lock` / metadata |
+| stevedore | Dev transitive dependency | 5.9.1 (3.11+); 5.8.0 (3.10) | Apache-2.0 | `uv.lock` / metadata |
+| markdown-it-py | Dev transitive dependency | 4.2.0 | MIT | `uv.lock` / metadata |
+| mdurl | Dev transitive dependency | 0.1.2 | MIT | `uv.lock` / metadata |
 | flake8 | Dev dependency | 7.5.0 (3.11+); 7.4.1 (3.10) | MIT | `uv.lock` / metadata |
 | pyflakes | Dev transitive dependency | 4.1.0 (3.11+); 4.0.3 (3.10) | MIT | `uv.lock` / metadata |
 | pycodestyle | Dev transitive dependency | 2.15.0 | MIT | `uv.lock` / metadata |
@@ -57,6 +64,7 @@ licenses, and version-control references to support legal and security review.
    versions/licenses.
 5. Re-run validations:
    * `uv run flake8 find-overlay.py`
+   * `uv run bandit -c pyproject.toml -r find-overlay.py`
    * `uv run pytest`
 
 `requirements.txt` is a generated export. Do not edit it by hand; regenerate it

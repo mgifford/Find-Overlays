@@ -11,11 +11,11 @@ import os
 import re
 import argparse
 import sys
-import xml.etree.ElementTree as ET
 from datetime import date
 from collections import Counter
 
 import requests
+from defusedxml import DefusedXmlException, ElementTree as ET
 
 # --- CONFIGURATION & SIGNATURES ---
 
@@ -115,7 +115,7 @@ def fetch_urls_from_source(source: str) -> list[str]:
             if not tags:
                 tags = root.findall(".//loc")
             urls = [t.text.strip() for t in tags if t.text]
-        except ET.ParseError:
+        except (ET.ParseError, DefusedXmlException):
             print("XML Parse Error.")
 
     elif "Domain name" in content[:200] or "domain" in content[:200].lower():

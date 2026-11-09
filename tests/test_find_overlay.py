@@ -232,6 +232,22 @@ class TestFetchUrlsFromSource:
         result = fetch_urls_from_source(str(bad_xml))
         assert result == []
 
+    def test_xml_entity_expansion_is_rejected(self, tmp_path: Path) -> None:
+        """XML entity declarations should be rejected, never expanded."""
+        entity_xml = textwrap.dedent("""\
+            <?xml version="1.0"?>
+            <!DOCTYPE urlset [
+                <!ENTITY lol "lol">
+            ]>
+            <urlset>
+                <url><loc>https://example.com/&lol;</loc></url>
+            </urlset>
+        """)
+        xml_file = tmp_path / "entity.xml"
+        xml_file.write_text(entity_xml)
+        result = fetch_urls_from_source(str(xml_file))
+        assert result == []
+
     def test_remote_url_success(self) -> None:
         """A successful remote fetch should return parsed URLs."""
         mock_response = MagicMock()
