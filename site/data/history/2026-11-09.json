@@ -1,18 +1,18 @@
 {
   "scan_date": "2026-11-09",
-  "generated_at": "2026-11-09T23:41:11.951412+00:00",
+  "generated_at": "2026-11-09T23:44:21.451813+00:00",
   "source": "data/sites.csv",
   "summary": {
     "sites": 12,
     "with_overlays": 2,
     "overlay_count": 2,
-    "errors": 3
+    "errors": 2
   },
   "results": [
     {
       "url": "https://amazon.com",
       "final_url": "https://www.amazon.com/",
-      "status": 202,
+      "status": 200,
       "detected_overlay": "None Found",
       "overlays": [],
       "overlay_versions": "",

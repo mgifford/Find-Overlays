@@ -72,6 +72,13 @@
     "date": "2026-11-09",
     "url": "https://amazon.com",
     "kind": "status_changed",
+    "from": "202",
+    "to": "200"
+  },
+  {
+    "date": "2026-11-09",
+    "url": "https://amazon.com",
+    "kind": "status_changed",
     "from": "200",
     "to": "202"
   },
