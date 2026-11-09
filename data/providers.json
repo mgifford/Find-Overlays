@@ -2,9 +2,29 @@
   "updated": "2026-11-09",
   "general_concerns": [
     {
-      "title": "Overlay Fact Sheet",
-      "url": "https://overlayfactsheet.com/",
-      "note": "Community statement signed by accessibility practitioners explaining why overlay products do not make a site accessible."
+      "title": "Overlay Fact Sheet (English)",
+      "url": "https://overlayfactsheet.com/en/",
+      "note": "The primary community reference on web accessibility overlays, maintained by accessibility practitioners and endorsed by signatories."
+    },
+    {
+      "title": "Overlay Fact Sheet: fitness for compliance",
+      "url": "https://overlayfactsheet.com/en/#fitness-for-achieving-compliance-with-accessibility-standards",
+      "note": "Explains why an overlay can improve a few provisions but cannot achieve full conformance with WCAG or laws that require it."
+    },
+    {
+      "title": "Overlay Fact Sheet: automated repair limits",
+      "url": "https://overlayfactsheet.com/en/#strengths-and-weaknesses-of-automated-repair",
+      "note": "Documents unreliable automated repair of text alternatives, form labels and errors, focus control, keyboard access, and modern component interfaces."
+    },
+    {
+      "title": "Overlay Fact Sheet: privacy of personal data",
+      "url": "https://overlayfactsheet.com/en/#privacy",
+      "note": "Describes how overlays can expose disability status and persist settings across sites without informed consent, creating privacy and consent risk."
+    },
+    {
+      "title": "Overlay Fact Sheet: in their own words",
+      "url": "https://overlayfactsheet.com/en/#in-their-own-words",
+      "note": "First-person accounts from disabled users describing overlays interfering with assistive technology and making sites harder to use."
     },
     {
       "title": "Illinois DOIT: Accessibility overlays",
