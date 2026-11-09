@@ -7,7 +7,7 @@ import json
 import os
 import re
 import socket
-import subprocess
+import subprocess  # nosec B404 - fixed gh CLI invocation, no shell
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -21,7 +21,7 @@ SECTION_PATTERN = re.compile(
 
 def gh(*args: str) -> str:
     """Run the GitHub CLI and return stdout."""
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 B607 - fixed argv, no shell
         ["gh", *args],
         capture_output=True,
         text=True,
