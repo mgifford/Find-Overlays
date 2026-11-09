@@ -40,7 +40,7 @@
     <section aria-labelledby="latest-heading">
       <h2 id="latest-heading">Latest scan</h2>
       <p>Scan date: <time datetime="2026-11-09">2026-11-09</time>.
-        Built <time datetime="2026-11-09T23:46:19.336572+00:00">2026-11-09T23:46:19.336572+00:00</time>.</p>
+        Built <time datetime="2026-11-09T23:47:15.532963+00:00">2026-11-09T23:47:15.532963+00:00</time>.</p>
       <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">2</strong></li></ul>
     </section>
 
@@ -151,7 +151,8 @@
       </ul>
       <h3>Provider-specific context</h3>
       <p>Provider details are shown only for products detected in a scan.</p>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region"
+           aria-label="Provider concerns table, scroll horizontally if needed">
         <table>
           <caption>Detected overlay providers and sourced concerns</caption>
           <thead>
