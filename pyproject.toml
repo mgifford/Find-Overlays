@@ -3,7 +3,7 @@ name = "find-overlays"
 version = "0.1.0"
 description = "Scan websites for accessibility overlay products and report findings."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "requests",
 ]

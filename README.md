@@ -91,7 +91,8 @@ This tool helps procurement and platform teams verify:
 The scanner works by:
 
 1. Fetching pages from a provided list of URLs or domains
-2. Inspecting page content and loaded resources
+2. Inspecting the HTML returned for each page (the tool does not run JavaScript
+   or fetch every subresource)
 3. Matching detected scripts, patterns, and domains against a maintained list of known overlay technologies
 4. Reporting results in a machine-readable format suitable for review or follow-up
 
@@ -106,7 +107,7 @@ The detection approach is intentionally conservative. The goal is **signal**, no
 
 
 ## Requirements
-- Python 3.9+
+- Python 3.10+ (3.12 is the tested development version)
 - Works on macOS/Linux/Windows. For macOS/Linux, use a virtual environment.
 
 ## Setup
@@ -219,6 +220,17 @@ Find-Overlays:
 
 This aligns with the broader accessibility principle that tools should not introduce additional risk, surveillance, or data leakage.
 
+
+## Accessibility of this tool
+
+Find-Overlays is a command-line scanner, but its own output still needs to be
+usable. The project's accessibility commitment — including console and CSV
+output rules, known limitations, and how to report a barrier — is documented in
+[ACCESSIBILITY.md](ACCESSIBILITY.md).
+
+Contributions must keep terminal and CSV output screen-reader friendly and must
+not rely on colour alone. The scanner reports overlay use; it does not evaluate
+or certify the accessibility of the sites it scans.
 
 ## Status and limitations
 
