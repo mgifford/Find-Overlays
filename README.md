@@ -17,6 +17,17 @@ This tool **does not test accessibility** and **does not score compliance**. It 
 
 > Are accessibility overlays being used on our sites, and where?
 
+## Public results site
+
+Results from the maintained scan list in `data/sites.csv` are published at
+<https://mgifford.github.io/Find-Overlays/>. The site shows current findings,
+the overlay versions it can see, and a change log with the date of each change.
+
+To ask for a site to be reviewed, use the
+[scan request form](https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml).
+Requests are public, require authorisation confirmation, and are triaged by a
+maintainer before they enter the scan queue.
+
 ---
 
 ## Why this exists
@@ -94,7 +105,8 @@ The scanner works by:
 2. Inspecting the HTML returned for each page (the tool does not run JavaScript
    or fetch every subresource)
 3. Matching detected scripts, patterns, and domains against a maintained list of known overlay technologies
-4. Reporting results in a machine-readable format suitable for review or follow-up
+4. Extracting overlay versions from script URLs where the page exposes them
+5. Reporting results as CSV or JSON for review, follow-up, and the public site
 
 The detection approach is intentionally conservative. The goal is **signal**, not speculation.
 
@@ -136,6 +148,9 @@ uv run find-overlay.py current-full.csv --no-csv
 
 # Custom output filename
 uv run find-overlay.py current-full.csv --output my-report.csv
+
+# Full JSON output, including overlay versions and evidence URLs
+uv run find-overlay.py current-full.csv --json scan.json --no-csv
 ```
 
 ### Sample Data
@@ -156,8 +171,11 @@ uv run find-overlay.py samples/sample-domains.csv --limit 100
 - `source`: Required. Path to local file (`.csv`, `.xml`, or text) or a URL.
 - `--output`: Custom output filename. Defaults to `<source>-overlays-YYYY-MM-DD.csv`.
 - `--simple`: Output only `url` and `detected_overlay` columns.
-- `--no-csv`: Do not write a CSV; print stats only.
- - `--limit <N>`: Limit the number of unique domains scanned to `N` (applied after deduplication). Useful for sampling large CSVs.
+- `--json PATH`: Write full results, including overlay versions and evidence
+  URLs, as JSON.
+- `--no-csv`: Do not write a CSV file.
+- `--limit <N>`: Limit the number of unique URLs scanned to `N` (applied after
+  deduplication). Useful for sampling large lists.
 
 ## Input Formats
 The tool accepts two common formats:
@@ -169,6 +187,7 @@ When CSV generation is enabled, the default columns are:
 - `url`: Scanned URL
 - `status`: HTTP status code (e.g., 200, 404)
 - `detected_overlay`: Name(s) of overlay(s) found or `None Found`
+- `overlay_versions`: Best-effort version(s) read from asset URLs, or `unknown`
 - `other_widgets`: Detected common widgets (e.g., Intercom, Zendesk)
 
 The console also prints a summary with status code counts, overlay counts, and the percentage of domains with overlays.
@@ -242,16 +261,33 @@ Findings are uploaded to the repository's Security tab when code scanning is
 available. The workflow is defined in
 [`.github/workflows/security.yml`](.github/workflows/security.yml).
 
+## Site automation
+
+- [`data/sites.csv`](data/sites.csv) is the scan queue.
+- [`.github/workflows/queue-scan-request.yml`](.github/workflows/queue-scan-request.yml)
+  adds URLs from approved `scan-request` issues after maintainer review.
+- [`.github/workflows/scan-and-publish.yml`](.github/workflows/scan-and-publish.yml)
+  scans weekly, on scan-list changes, and on manual dispatch. It commits
+  history snapshots and deploys the Pages site.
+- [`scripts/build_site.py`](scripts/build_site.py) merges the latest scan with
+  the previous snapshot and renders the static site.
+- [`data/providers.json`](data/providers.json) holds sourced provider context
+  and links to known concerns.
+
+`site/index.html` and `site/data/` are generated. Edit
+[`site/template.html`](site/template.html), [`site/styles.css`](site/styles.css),
+or [`scripts/build_site.py`](scripts/build_site.py) instead.
+
 ## Accessibility of this tool
 
-Find-Overlays is a command-line scanner, but its own output still needs to be
-usable. The project's accessibility commitment — including console and CSV
-output rules, known limitations, and how to report a barrier — is documented in
-[ACCESSIBILITY.md](ACCESSIBILITY.md).
+Find-Overlays has a command-line scanner and a static results site, and both
+need to be usable. The project's accessibility commitment — including console,
+CSV, and Pages output rules, known limitations, and how to report a barrier — is
+documented in [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
-Contributions must keep terminal and CSV output screen-reader friendly and must
-not rely on colour alone. The scanner reports overlay use; it does not evaluate
-or certify the accessibility of the sites it scans.
+Contributions must keep terminal, CSV, and site output screen-reader friendly
+and must not rely on colour alone. The scanner reports overlay use; it does not
+evaluate or certify the accessibility of the sites it scans.
 
 ## Status and limitations
 

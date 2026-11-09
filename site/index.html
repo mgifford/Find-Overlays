@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Public scan results showing where accessibility overlay products are referenced.">
+  <title>Find Overlays — public scan results</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <p class="brand">Find Overlays</p>
+      <nav aria-label="Primary">
+        <ul>
+          <li><a href="#findings">Findings</a></li>
+          <li><a href="#changes">Changes</a></li>
+          <li><a href="#concerns">Concerns</a></li>
+          <li><a href="#request">Request a scan</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <h1>Accessibility overlay scan results</h1>
+    <p class="lede">
+      This site lists public websites that were submitted for review and whether
+      their HTML references a known accessibility overlay product. It records
+      the dates those findings change and the overlay asset versions it can see.
+    </p>
+    <p class="notice">
+      <strong>A finding is a signal, not a verdict.</strong> An overlay reference
+      does not prove a site is inaccessible, and a missing reference does not
+      prove it is accessible. This project does not test WCAG conformance.
+    </p>
+
+    <section aria-labelledby="latest-heading">
+      <h2 id="latest-heading">Latest scan</h2>
+      <p>Scan date: <time datetime="2026-11-09">2026-11-09</time>.
+        Built <time datetime="2026-11-09T23:37:14.465135+00:00">2026-11-09T23:37:14.465135+00:00</time>.</p>
+      <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">2</strong></li></ul>
+    </section>
+
+    <section id="findings" aria-labelledby="findings-heading">
+      <h2 id="findings-heading">Findings</h2>
+      <p>
+        Overlay versions are best-effort: they are read from script URLs and
+        query strings. “Version unknown” means the page references the product
+        without exposing a version.
+      </p>
+      <div class="filter">
+        <label for="filter">Filter sites or overlays</label>
+        <input id="filter" name="filter" type="search" autocomplete="off"
+               placeholder="example.org or UserWay">
+        <p id="filter-count" class="filter-count" aria-live="polite">
+          12 sites shown
+        </p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption>Overlay findings by site</caption>
+          <thead>
+            <tr>
+              <th scope="col">Site</th>
+              <th scope="col">Status</th>
+              <th scope="col">Overlays and versions</th>
+              <th scope="col">First seen</th>
+              <th scope="col">Last seen</th>
+            </tr>
+          </thead>
+          <tbody id="findings-body">
+            <tr><th scope="row"><a href="https://amazon.com" rel="noopener noreferrer">amazon.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://apple.com" rel="noopener noreferrer">apple.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://bbc.co.uk" rel="noopener noreferrer">bbc.co.uk</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://cnn.com" rel="noopener noreferrer">cnn.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://facebook.com" rel="noopener noreferrer">facebook.com</a></th><td><span class="status warn">400</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://google.com" rel="noopener noreferrer">google.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">UserWay <span class="version unknown">version unknown</span> <a class="evidence" href="https://cdn.userway.org/widget.js" rel="noopener noreferrer" aria-label="Evidence for UserWay">asset</a></span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></th><td><span class="status warn">403</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">AudioEye <span class="version unknown">version unknown</span> <a class="evidence" href="https://wsmcdn.audioeye.com/aem.js" rel="noopener noreferrer" aria-label="Evidence for AudioEye">asset</a></span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://twitter.com" rel="noopener noreferrer">twitter.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://wikipedia.org" rel="noopener noreferrer">wikipedia.org</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://www.microsoft.com" rel="noopener noreferrer">www.microsoft.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="data-links">
+        Data:
+        <a href="data/latest.json">latest scan JSON</a>,
+        <a href="data/changes.json">change log JSON</a>.
+      </p>
+    </section>
+
+    <section id="changes" aria-labelledby="changes-heading">
+      <h2 id="changes-heading">Changes over time</h2>
+      <p>
+        Each scheduled scan compares its result with the previous snapshot.
+        The table shows the most recent 12 events; the
+        <a href="data/changes.json">change log JSON</a> has the full retained
+        history.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <caption>Recent changes in overlay findings</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Site</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2026-11-09</td><td><a href="https://www.microsoft.com" rel="noopener noreferrer">www.microsoft.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://wikipedia.org" rel="noopener noreferrer">wikipedia.org</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://twitter.com" rel="noopener noreferrer">twitter.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://google.com" rel="noopener noreferrer">google.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://facebook.com" rel="noopener noreferrer">facebook.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://cnn.com" rel="noopener noreferrer">cnn.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://bbc.co.uk" rel="noopener noreferrer">bbc.co.uk</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://apple.com" rel="noopener noreferrer">apple.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://amazon.com" rel="noopener noreferrer">amazon.com</a></td><td>Added to the scan list</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="concerns" aria-labelledby="concerns-heading">
+      <h2 id="concerns-heading">Known concerns with overlays</h2>
+      <p>
+        These references explain why overlay products are controversial. They
+        are third-party sources, not findings by this project, and they are not
+        legal advice.
+      </p>
+      <h3 id="general-concerns">General context</h3>
+      <ul class="concerns">
+        <li><a href="https://overlayfactsheet.com/" rel="noopener noreferrer">Overlay Fact Sheet</a><p>Community statement signed by accessibility practitioners explaining why overlay products do not make a site accessible.</p></li>
+<li><a href="https://doit.illinois.gov/initiatives/accessibility/guides/overlays.html" rel="noopener noreferrer">Illinois DOIT: Accessibility overlays</a><p>Government guidance on the limits of overlay products and the need for structural remediation.</p></li>
+<li><a href="https://search.ftc.gov/news-events/news/press-releases/2025/04/ftc-approves-final-order-requiring-accessibe-pay-1-million" rel="noopener noreferrer">FTC: accessiBe final order (provider example)</a><p>In 2025 the FTC approved a final order requiring accessiBe to pay $1 million over deceptive claims that its AI product could make websites compliant with accessibility guidelines. This is one example of a provider-specific action, not a finding about any site listed here.</p></li>
+      </ul>
+      <h3>Provider-specific context</h3>
+      <p>Provider details are shown only for products detected in a scan.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Detected overlay providers and sourced concerns</caption>
+          <thead>
+            <tr>
+              <th scope="col">Provider</th>
+              <th scope="col">Website</th>
+              <th scope="col">Specific concerns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">AudioEye</th><td><a href="https://www.audioeye.com/" rel="noopener noreferrer">website</a></td><td><a href="#general-concerns">general concerns</a></td></tr>
+<tr><th scope="row">UserWay</th><td><a href="https://userway.org/" rel="noopener noreferrer">website</a></td><td><a href="#general-concerns">general concerns</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="meta">Provider metadata updated: 2026-11-09.</p>
+    </section>
+
+    <section id="request" aria-labelledby="request-heading">
+      <h2 id="request-heading">Request a review</h2>
+      <p>
+        Submit a site through the
+        <a href="https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml">scan request form</a>.
+        Requests require confirmation that you are authorised to ask for the
+        scan and that you understand the results will be public. A maintainer
+        reviews requests before they enter the scan list.
+      </p>
+      <p>
+        To correct a finding, open a regular issue with the site URL and the
+        evidence you want reviewed.
+      </p>
+    </section>
+
+    <section aria-labelledby="method-heading">
+      <h2 id="method-heading">Method and limitations</h2>
+      <ul>
+        <li>The scanner fetches the initial HTML only; it does not run JavaScript.</li>
+        <li>An overlay injected at runtime, or referenced only from another script, may be missed.</li>
+        <li>Version detection is best-effort and may be blank or wrong.</li>
+        <li>HTTP errors and timeouts are reported as statuses, not treated as proof of anything.</li>
+        <li>Only sites submitted through the issue form or curated by maintainers are scanned.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>
+        <a href="https://github.com/mgifford/Find-Overlays">Source code</a> ·
+        <a href="https://github.com/mgifford/Find-Overlays/blob/main/ACCESSIBILITY.md">Accessibility commitment</a> ·
+        AGPL-3.0
+      </p>
+      <p>Scans run in GitHub Actions and publish to GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

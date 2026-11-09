@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Public scan results showing where accessibility overlay products are referenced.">
+  <title>Find Overlays — public scan results</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <p class="brand">Find Overlays</p>
+      <nav aria-label="Primary">
+        <ul>
+          <li><a href="#findings">Findings</a></li>
+          <li><a href="#changes">Changes</a></li>
+          <li><a href="#concerns">Concerns</a></li>
+          <li><a href="#request">Request a scan</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <h1>Accessibility overlay scan results</h1>
+    <p class="lede">
+      This site lists public websites that were submitted for review and whether
+      their HTML references a known accessibility overlay product. It records
+      the dates those findings change and the overlay asset versions it can see.
+    </p>
+    <p class="notice">
+      <strong>A finding is a signal, not a verdict.</strong> An overlay reference
+      does not prove a site is inaccessible, and a missing reference does not
+      prove it is accessible. This project does not test WCAG conformance.
+    </p>
+
+    <section aria-labelledby="latest-heading">
+      <h2 id="latest-heading">Latest scan</h2>
+      <p>Scan date: <time datetime="{{SCAN_DATE}}">{{SCAN_DATE}}</time>.
+        Built <time datetime="{{GENERATED_AT}}">{{GENERATED_AT}}</time>.</p>
+      {{SUMMARY}}
+    </section>
+
+    <section id="findings" aria-labelledby="findings-heading">
+      <h2 id="findings-heading">Findings</h2>
+      <p>
+        Overlay versions are best-effort: they are read from script URLs and
+        query strings. “Version unknown” means the page references the product
+        without exposing a version.
+      </p>
+      <div class="filter">
+        <label for="filter">Filter sites or overlays</label>
+        <input id="filter" name="filter" type="search" autocomplete="off"
+               placeholder="example.org or UserWay">
+        <p id="filter-count" class="filter-count" aria-live="polite">
+          {{SITE_COUNT}} sites shown
+        </p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption>Overlay findings by site</caption>
+          <thead>
+            <tr>
+              <th scope="col">Site</th>
+              <th scope="col">Status</th>
+              <th scope="col">Overlays and versions</th>
+              <th scope="col">First seen</th>
+              <th scope="col">Last seen</th>
+            </tr>
+          </thead>
+          <tbody id="findings-body">
+            {{SITE_ROWS}}
+          </tbody>
+        </table>
+      </div>
+      <p class="data-links">
+        Data:
+        <a href="data/latest.json">latest scan JSON</a>,
+        <a href="data/changes.json">change log JSON</a>.
+      </p>
+    </section>
+
+    <section id="changes" aria-labelledby="changes-heading">
+      <h2 id="changes-heading">Changes over time</h2>
+      <p>
+        Each scheduled scan compares its result with the previous snapshot.
+        The table shows the most recent {{CHANGE_COUNT}} events; the
+        <a href="data/changes.json">change log JSON</a> has the full retained
+        history.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <caption>Recent changes in overlay findings</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Site</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{CHANGE_ROWS}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="concerns" aria-labelledby="concerns-heading">
+      <h2 id="concerns-heading">Known concerns with overlays</h2>
+      <p>
+        These references explain why overlay products are controversial. They
+        are third-party sources, not findings by this project, and they are not
+        legal advice.
+      </p>
+      <h3 id="general-concerns">General context</h3>
+      <ul class="concerns">
+        {{GENERAL_CONCERNS}}
+      </ul>
+      <h3>Provider-specific context</h3>
+      <p>Provider details are shown only for products detected in a scan.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Detected overlay providers and sourced concerns</caption>
+          <thead>
+            <tr>
+              <th scope="col">Provider</th>
+              <th scope="col">Website</th>
+              <th scope="col">Specific concerns</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{PROVIDER_ROWS}}
+          </tbody>
+        </table>
+      </div>
+      <p class="meta">Provider metadata updated: {{PROVIDER_UPDATED}}.</p>
+    </section>
+
+    <section id="request" aria-labelledby="request-heading">
+      <h2 id="request-heading">Request a review</h2>
+      <p>
+        Submit a site through the
+        <a href="https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml">scan request form</a>.
+        Requests require confirmation that you are authorised to ask for the
+        scan and that you understand the results will be public. A maintainer
+        reviews requests before they enter the scan list.
+      </p>
+      <p>
+        To correct a finding, open a regular issue with the site URL and the
+        evidence you want reviewed.
+      </p>
+    </section>
+
+    <section aria-labelledby="method-heading">
+      <h2 id="method-heading">Method and limitations</h2>
+      <ul>
+        <li>The scanner fetches the initial HTML only; it does not run JavaScript.</li>
+        <li>An overlay injected at runtime, or referenced only from another script, may be missed.</li>
+        <li>Version detection is best-effort and may be blank or wrong.</li>
+        <li>HTTP errors and timeouts are reported as statuses, not treated as proof of anything.</li>
+        <li>Only sites submitted through the issue form or curated by maintainers are scanned.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>
+        <a href="https://github.com/mgifford/Find-Overlays">Source code</a> ·
+        <a href="https://github.com/mgifford/Find-Overlays/blob/main/ACCESSIBILITY.md">Accessibility commitment</a> ·
+        AGPL-3.0
+      </p>
+      <p>Scans run in GitHub Actions and publish to GitHub Pages.</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

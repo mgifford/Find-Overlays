@@ -5,11 +5,14 @@ and generate_filename using pytest and unittest.mock.
 """
 
 import importlib.util
+import json
 import sys
 import textwrap
 import types
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 # ---------------------------------------------------------------------------
@@ -42,6 +45,9 @@ parse_raw_text = fo.parse_raw_text
 fetch_urls_from_source = fo.fetch_urls_from_source
 scan_domain = fo.scan_domain
 generate_filename = fo.generate_filename
+extract_version = fo.extract_version
+detect_overlays = fo.detect_overlays
+is_public_host = fo.is_public_host
 
 
 # ===========================================================================
@@ -150,6 +156,77 @@ class TestParseRawText:
         assert "https://good.example.com" in result
         assert "https://ok.net" in result
         assert len([u for u in result if "bad" in u]) == 0
+
+
+# ===========================================================================
+# extract_version / detect_overlays
+# ===========================================================================
+
+class TestVersionDetection:
+    """Tests for best-effort overlay version extraction."""
+
+    def test_query_string_version(self) -> None:
+        """A ?v= query parameter should be read as the version."""
+        assert extract_version("https://cdn.example.com/a.js?v=1.2.3") == "1.2.3"
+
+    def test_path_version(self) -> None:
+        """A /v2.0.1/ path segment should be read as the version."""
+        assert extract_version(
+            "https://cdn.example.com/v2.0.1/widget.js"
+        ) == "2.0.1"
+
+    def test_at_version(self) -> None:
+        """An @4.5.6 package-style segment should be read as the version."""
+        assert extract_version(
+            "https://cdn.example.com/@4.5.6/widget.js"
+        ) == "4.5.6"
+
+    def test_filename_version(self) -> None:
+        """A widget-3.4.5.min.js filename should be read as the version."""
+        assert extract_version(
+            "https://cdn.example.com/widget-3.4.5.min.js"
+        ) == "3.4.5"
+
+    def test_missing_version_returns_empty_string(self) -> None:
+        """A URL without a version marker should return an empty string."""
+        assert extract_version("https://cdn.example.com/widget.js") == ""
+
+    def test_detect_overlays_includes_version_and_evidence(self) -> None:
+        """Detected overlays should carry the version and asset URL."""
+        html = '<script src="https://cdn.userway.org/widget.js?v=2.1.0"></script>'
+        overlays = detect_overlays(html)
+        userway = next(item for item in overlays if item["name"] == "UserWay")
+        assert userway["version"] == "2.1.0"
+        assert "cdn.userway.org" in userway["evidence"]
+
+    def test_detect_overlays_without_version(self) -> None:
+        """An unversioned asset should still be detected with a blank version."""
+        html = '<script src="https://acsbapp.com/apps/app.js"></script>'
+        overlays = detect_overlays(html)
+        accessibe = next(
+            item for item in overlays if item["name"] == "AccessiBe"
+        )
+        assert accessibe["version"] == ""
+
+
+class TestPublicHost:
+    """Tests for the public-address guard (literal addresses only)."""
+
+    def test_loopback_is_not_public(self) -> None:
+        """Loopback addresses are not public."""
+        assert is_public_host("127.0.0.1") is False
+
+    def test_private_address_is_not_public(self) -> None:
+        """RFC 1918 addresses are not public."""
+        assert is_public_host("10.0.0.1") is False
+
+    def test_documentation_address_is_not_public(self) -> None:
+        """Reserved documentation addresses are not public."""
+        assert is_public_host("192.0.2.1") is False
+
+    def test_public_literal_is_public(self) -> None:
+        """A globally routable literal address is public."""
+        assert is_public_host("8.8.8.8") is True
 
 
 # ===========================================================================
@@ -309,6 +386,11 @@ class TestFetchUrlsFromSource:
 class TestScanDomain:
     """Tests for scan_domain using mocked HTTP calls."""
 
+    @pytest.fixture(autouse=True)
+    def _public_hosts(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Treat hosts as public unless a test overrides the check."""
+        monkeypatch.setattr(fo, "is_public_host", lambda host: True)
+
     def _make_response(self, html: str, status_code: int = 200) -> MagicMock:
         """Build a mock requests.Response."""
         mock_resp = MagicMock()
@@ -410,6 +492,14 @@ class TestScanDomain:
         with patch("requests.get", side_effect=RuntimeError("boom")):
             result = scan_domain("https://example.com")
         assert result["status"] == "Error"
+
+    def test_non_public_host_is_blocked(self, monkeypatch) -> None:
+        """A private address should be blocked before any request is made."""
+        monkeypatch.setattr(fo, "is_public_host", lambda host: False)
+        with patch("requests.get") as mock_get:
+            result = scan_domain("http://127.0.0.1")
+        mock_get.assert_not_called()
+        assert result["status"] == "Blocked"
 
     def test_non_200_status_code_is_recorded(self) -> None:
         """A 404 response status code should be stored in result['status']."""
@@ -536,6 +626,85 @@ class TestMain:
         ):
             fo.main()
         assert output_file.exists()
+
+    def test_main_writes_json_output(self, tmp_path: Path) -> None:
+        """--json should write results and metadata to the requested file."""
+        csv_file = tmp_path / "smoke.csv"
+        csv_file.write_text("Domain name\nexample.com\n")
+        json_file = tmp_path / "scan.json"
+        scan_result = {
+            "url": "https://example.com",
+            "final_url": "https://example.com",
+            "status": 200,
+            "detected_overlay": "UserWay",
+            "overlays": [
+                {
+                    "name": "UserWay",
+                    "version": "2.1.0",
+                    "evidence": "https://cdn.userway.org/widget.js?v=2.1.0",
+                }
+            ],
+            "overlay_versions": "UserWay 2.1.0",
+            "other_widgets": "",
+        }
+        with (
+            patch(
+                "sys.argv",
+                [
+                    "find-overlay.py",
+                    str(csv_file),
+                    "--json",
+                    str(json_file),
+                    "--no-csv",
+                ],
+            ),
+            patch.object(fo, "scan_domain", return_value=scan_result),
+        ):
+            fo.main()
+
+        payload = json.loads(json_file.read_text())
+        assert payload["results"][0]["url"] == "https://example.com"
+        assert payload["results"][0]["overlays"][0]["version"] == "2.1.0"
+
+    def test_main_csv_includes_overlay_versions(self, tmp_path: Path) -> None:
+        """The default CSV should include the overlay_versions column."""
+        csv_file = tmp_path / "smoke.csv"
+        csv_file.write_text("Domain name\nexample.com\n")
+        output_file = tmp_path / "versions.csv"
+        scan_result = {
+            "url": "https://example.com",
+            "final_url": "https://example.com",
+            "status": 200,
+            "detected_overlay": "UserWay",
+            "overlays": [
+                {
+                    "name": "UserWay",
+                    "version": "2.1.0",
+                    "evidence": "https://cdn.userway.org/widget.js?v=2.1.0",
+                }
+            ],
+            "overlay_versions": "UserWay 2.1.0",
+            "other_widgets": "",
+        }
+        with (
+            patch(
+                "sys.argv",
+                [
+                    "find-overlay.py",
+                    str(csv_file),
+                    "--output",
+                    str(output_file),
+                ],
+            ),
+            patch.object(fo, "scan_domain", return_value=scan_result),
+        ):
+            fo.main()
+
+        with open(output_file) as handle:
+            header = handle.readline().strip()
+        assert header == (
+            "url,status,detected_overlay,overlay_versions,other_widgets"
+        )
 
     def test_main_simple_flag(self, tmp_path: Path) -> None:
         """--simple flag should produce a CSV with only url/overlay columns."""

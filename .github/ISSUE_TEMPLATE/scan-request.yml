@@ -1,0 +1,42 @@
+name: Scan request
+description: Ask for a public website to be reviewed for accessibility overlay use.
+title: "[Scan request] "
+labels: ["scan-request", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to ask for a public website to be added to the scan.
+        Results are published on the public Find Overlays site.
+
+        A maintainer reviews every request. Requests for private, internal, or
+        non-public systems cannot be accepted.
+  - type: textarea
+    id: urls
+    attributes:
+      label: Site URLs
+      description: One public http(s) URL per line, up to 10. Do not include private or internal hosts.
+      placeholder: |
+        https://example.org
+        https://example.org/accessibility
+    validations:
+      required: true
+  - type: input
+    id: organization
+    attributes:
+      label: Organization or context
+      description: Optional. Who operates the site, or why it is relevant?
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional. Include anything that would help review the request.
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am authorised to request a scan of these sites, or this is a public-interest request for a publicly reachable site.
+          required: true
+        - label: I understand that the URLs and scan findings will be published publicly.
+          required: true

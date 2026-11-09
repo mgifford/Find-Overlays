@@ -4,3 +4,4 @@ __pycache__
 *-overlays-*.csv
 .venv/
 *.egg-info/
+/scan.json

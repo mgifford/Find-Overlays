@@ -1,0 +1,157 @@
+{
+  "scan_date": "2026-11-09",
+  "generated_at": "2026-11-09T23:37:14.465135+00:00",
+  "source": "data/sites.csv",
+  "summary": {
+    "sites": 12,
+    "with_overlays": 2,
+    "overlay_count": 2,
+    "errors": 2
+  },
+  "results": [
+    {
+      "url": "https://amazon.com",
+      "final_url": "https://www.amazon.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://apple.com",
+      "final_url": "https://www.apple.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://bbc.co.uk",
+      "final_url": "https://www.bbc.co.uk/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://cnn.com",
+      "final_url": "https://www.cnn.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://facebook.com",
+      "final_url": "https://www.facebook.com/",
+      "status": 400,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://google.com",
+      "final_url": "https://www.google.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://independencemo.gov",
+      "final_url": "https://www.independencemo.gov/",
+      "status": 200,
+      "detected_overlay": "UserWay",
+      "overlays": [
+        {
+          "name": "UserWay",
+          "version": "",
+          "evidence": "https://cdn.userway.org/widget.js"
+        }
+      ],
+      "overlay_versions": "UserWay unknown",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://nytimes.com",
+      "final_url": "https://www.nytimes.com/",
+      "status": 403,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://syracuseut.gov",
+      "final_url": "https://syracuseut.gov/",
+      "status": 200,
+      "detected_overlay": "AudioEye",
+      "overlays": [
+        {
+          "name": "AudioEye",
+          "version": "",
+          "evidence": "https://wsmcdn.audioeye.com/aem.js"
+        }
+      ],
+      "overlay_versions": "AudioEye unknown",
+      "other_widgets": "Zendesk",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://twitter.com",
+      "final_url": "https://x.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://wikipedia.org",
+      "final_url": "https://www.wikipedia.org/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    },
+    {
+      "url": "https://www.microsoft.com",
+      "final_url": "https://www.microsoft.com/",
+      "status": 200,
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
+      "first_seen": "2026-11-09",
+      "last_seen": "2026-11-09"
+    }
+  ]
+}

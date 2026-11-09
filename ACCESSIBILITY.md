@@ -55,6 +55,10 @@ We aim to:
 - The command-line interface in `find-overlay.py`, including prompts, progress
   output, summaries, and error messages.
 - Generated CSV files and any report derived from them by this project.
+- The static GitHub Pages site in `site/`, including its tables, filter,
+  history, and data downloads.
+- The text of the scan request issue form, to the extent the project controls
+  it.
 - Repository documentation: `README.md`, this file, `AGENTS.md`,
   `PYTHON_GUIDANCE.md`, `SBOM.md`, and sample data.
 - Markdown documentation as rendered by GitHub, to the extent the source
@@ -89,7 +93,7 @@ condition.
 ## 4. Conformance status
 
 **Target only.** The project targets WCAG 2.2 Level AA for documentation and
-for any future web-published report. No evaluation has been completed, so no
+for the static GitHub Pages site. No evaluation has been completed, so no
 conformance claim is made.
 
 WCAG applies to web content. The CLI is non-web software, so it is assessed
@@ -128,10 +132,29 @@ colour or positioning semantics, it remains readable under those preferences.
 ### Output files
 
 - CSV files are UTF-8, one row per URL, with stable column names:
-  `url`, `status`, `detected_overlay`, `other_widgets` (or `url` and
-  `detected_overlay` with `--simple`).
+  `url`, `status`, `detected_overlay`, `overlay_versions`, `other_widgets`
+  (or `url` and `detected_overlay` with `--simple`).
 - The default console summary is linear text: total scanned, status counts,
   overlay counts, and the percentage with overlays.
+
+### Results site
+
+The static site at <https://mgifford.github.io/Find-Overlays/> is generated
+from a template and committed data. It aims to provide:
+
+- one H1, logical heading order, a skip link, and a labelled primary navigation;
+- a real data table with a caption and column headers, rendered without
+  JavaScript;
+- status and version information in text, not colour or icons alone;
+- a filter that updates an `aria-live` count and works without JavaScript for
+  the unfiltered table;
+- visible focus indicators and keyboard-operable links and inputs;
+- light and dark colour schemes that follow the operating-system preference;
+- responsive tables that scroll rather than forcing the page wider than the
+  viewport; and
+- no third-party scripts, tracking, or external fonts.
+
+The generated JSON files are downloads, not the primary way to read findings.
 
 ### Browser and assistive technology matrix
 
@@ -203,19 +226,20 @@ Before opening a pull request:
 
 | Tool or workflow | Version | Scope | Trigger | Status |
 |---|---|---|---|---|
-| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, CLI smoke tests | Local / pre-PR | 59 tests passing on 2026-11-09 |
+| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, site builder, and CLI tests | Local / pre-PR | 87 tests passing on 2026-11-09 |
 | `flake8` | 7.5.0 (7.4.1 on Python 3.10) | Style and lint, 88-character lines | Local / pre-PR | Passing on 2026-11-09 |
-| CI workflow | — | — | — | Not configured |
+| GitHub Actions | — | Tests/security scans and Pages deployment | Push, PR, schedule | Configured; no accessibility scanner yet |
 
 Commands:
 
 ```bash
 uv run pytest
-uv run flake8 find-overlay.py
+uv run flake8 find-overlay.py scripts tests
 ```
 
-Automated checks do not test accessibility. There is no HTML surface to scan
-with axe-core today; if one is added, add axe-core plus a manual review.
+Automated checks do not test accessibility. The Pages site is static HTML, but
+axe-core is not wired into CI yet; add it together with a manual review before
+claiming the site has been evaluated.
 
 ### Manual checks
 
@@ -227,6 +251,10 @@ with axe-core today; if one is added, add axe-core plus a manual review.
 | Open the CSV in a spreadsheet with a screen reader | Not yet performed |
 | Check redirected output on Windows with non-ASCII input | Not yet performed |
 | Keyboard-only run, including cancelling with `Ctrl+C` | Not yet performed |
+| Keyboard-only pass through the Pages site, including the filter | Not yet performed |
+| Screen-reader pass through the findings and changes tables | Not yet performed |
+| 200% text resize and 400% zoom on the Pages site | Not yet performed |
+| Forced-colours and high-contrast review of the Pages site | Not yet performed |
 
 Record the date, environment, and result when a check is completed, and move
 it into the matrix in section 5.
@@ -235,8 +263,9 @@ it into the matrix in section 5.
 
 A release is ready when:
 
-- `uv run flake8 find-overlay.py` and `uv run pytest` pass;
-- console and CSV formats remain compatible, or the change is documented;
+- `uv run flake8 find-overlay.py scripts tests` and `uv run pytest` pass;
+- console, CSV, and site data formats remain compatible, or the change is
+  documented;
 - no colour-only, ANSI, or timing-based interaction was introduced;
 - documentation and known limitations are current; and
 - any new output surface has had an automated and a manual accessibility
@@ -290,12 +319,15 @@ precedence over feature work.
 | Limitation | Severity | Impact | Workaround | Tracking |
 |---|---|---|---|---|
 | No recorded screen-reader testing | Moderate | Support is unverified, not known-good | Output is plain text; redirect to a file and read with your usual tools | No issue yet |
-| Scan order is not deterministic | Moderate | Repeated runs are harder to compare or follow linearly | Sort the CSV after the scan | No issue yet |
+| Pages site not yet tested with assistive technology | Moderate | Site support is unverified, not known-good | Read the data tables directly; report barriers | No issue yet |
 | Fixed-width progress table | Minor | Long URLs wrap and misalign columns | Use the `|` separators or the CSV file | No issue yet |
 | Errors print to stdout and the exit status is 0 | Moderate | Failures are easy to miss when piping or automating | Read the full output; check for "Error" | No issue yet |
-| No structured (JSON) or HTML report | Moderate | Screen-reader users get linear text only | Open the CSV in a spreadsheet | No issue yet |
+| Overlay versions are best-effort | Moderate | A version may be missing or wrong | Treat versions as indicators; check the evidence link | No issue yet |
+| Only initial HTML is scanned | Moderate | Runtime-injected overlays can be missed | Treat a clean result as “not observed”, not proof of absence | No issue yet |
+| Site data changes only when a scan runs | Minor | Findings can be up to a week old | Check the scan date and history | No issue yet |
+| No automated axe-core check for the site | Moderate | Structural regressions may go unnoticed | Manual keyboard and screen-reader review | No issue yet |
 | Redirected output on Windows may fail on non-ASCII input | Moderate | A scan can end with `UnicodeEncodeError` | Set `PYTHONIOENCODING=utf-8` | No issue yet |
-| Documentation is English only | Minor | Non-English readers must translate | Machine translation | No issue yet |
+| Documentation and site content are English only | Minor | Non-English readers must translate | Machine translation | No issue yet |
 
 This tool also cannot detect overlays injected at runtime by JavaScript that is
 not referenced in the initial HTML. That is a detection limitation, not an
@@ -336,6 +368,7 @@ accessibility metrics and must not be presented as such.
 | Date | Change | Reviewer |
 |---|---|---|
 | 2026-11-09 | Initial version, drafted alongside a code review | Pending maintainer review |
+| 2026-11-09 | Added the public Pages site, scan requests, and history to scope | Pending maintainer review |
 
 ## 16. References
 

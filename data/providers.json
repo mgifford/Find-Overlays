@@ -1,0 +1,74 @@
+{
+  "updated": "2026-11-09",
+  "general_concerns": [
+    {
+      "title": "Overlay Fact Sheet",
+      "url": "https://overlayfactsheet.com/",
+      "note": "Community statement signed by accessibility practitioners explaining why overlay products do not make a site accessible."
+    },
+    {
+      "title": "Illinois DOIT: Accessibility overlays",
+      "url": "https://doit.illinois.gov/initiatives/accessibility/guides/overlays.html",
+      "note": "Government guidance on the limits of overlay products and the need for structural remediation."
+    },
+    {
+      "title": "FTC: accessiBe final order (provider example)",
+      "url": "https://search.ftc.gov/news-events/news/press-releases/2025/04/ftc-approves-final-order-requiring-accessibe-pay-1-million",
+      "note": "In 2025 the FTC approved a final order requiring accessiBe to pay $1 million over deceptive claims that its AI product could make websites compliant with accessibility guidelines. This is one example of a provider-specific action, not a finding about any site listed here."
+    }
+  ],
+  "providers": {
+    "AccessiBe": {
+      "website": "https://accessibe.com/",
+      "concerns": [
+        {
+          "title": "FTC final order requiring accessiBe to pay $1 million",
+          "url": "https://search.ftc.gov/news-events/news/press-releases/2025/04/ftc-approves-final-order-requiring-accessibe-pay-1-million",
+          "note": "The FTC approved a final order over deceptive claims that its AI product could make websites compliant with accessibility guidelines."
+        }
+      ]
+    },
+    "UserWay": {
+      "website": "https://userway.org/"
+    },
+    "AudioEye": {
+      "website": "https://www.audioeye.com/"
+    },
+    "EqualWeb": {
+      "website": "https://www.equalweb.com/"
+    },
+    "ReciteME": {
+      "website": "https://reciteme.com/"
+    },
+    "Eye-Able": {
+      "website": "https://eye-able.com/"
+    },
+    "FACIL'iti": {
+      "website": "https://www.facil-iti.fr/"
+    },
+    "UsableNet (Assistive)": {
+      "website": "https://www.usablenet.com/"
+    },
+    "Allyable": {
+      "website": "https://allyable.com/"
+    },
+    "Adally": {
+      "website": "https://adally.com/"
+    },
+    "Accessiway": {
+      "website": "https://accessiway.com/"
+    },
+    "Accessiblelink": {
+      "website": "https://accessiblelink.com/"
+    },
+    "RentCafe": {
+      "website": "https://www.rentcafe.com/"
+    },
+    "TruAbilities": {
+      "website": "https://truabilities.com/"
+    },
+    "True Accessibility": {
+      "website": "https://trueaccessibility.com/"
+    }
+  }
+}

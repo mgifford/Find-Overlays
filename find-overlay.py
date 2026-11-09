@@ -5,14 +5,19 @@ each page, and checks the HTML for known overlay signatures.  Results are
 printed to stdout and optionally saved to a timestamped CSV file.
 """
 
+import argparse
 import csv
 import io
+import ipaddress
+import json
 import os
 import re
-import argparse
+import socket
 import sys
-from datetime import date
 from collections import Counter
+from datetime import date, datetime, timezone
+from html import unescape
+from urllib.parse import urlparse
 
 import requests
 from defusedxml import DefusedXmlException, ElementTree as ET
@@ -66,6 +71,17 @@ HEADERS = {
     )
 }
 
+VERSION_PATTERNS = [
+    re.compile(r"[?&](?:v|ver|version)=([0-9][A-Za-z0-9._-]*)", re.I),
+    re.compile(r"@([0-9]+(?:\.[0-9]+)+)"),
+    re.compile(r"/v([0-9]+(?:\.[0-9]+)+)(?:/|$)"),
+    re.compile(r"-([0-9]+(?:\.[0-9]+)+)(?:\.min)?\.js"),
+    re.compile(r"/([0-9]+(?:\.[0-9]+)+)/"),
+]
+
+ASSET_PATTERN = re.compile(r"""(?:src|href)\s*=\s*["']([^"']+)["']""", re.I)
+URL_PATTERN = re.compile(r"https?://[^\s\"'<>]+", re.I)
+
 
 def get_full_url(domain_entry: str) -> str | None:
     """Return a fully-qualified URL for *domain_entry*, or None to skip it.
@@ -79,6 +95,34 @@ def get_full_url(domain_entry: str) -> str | None:
     if not domain_entry.startswith("http"):
         return f"https://{domain_entry}"
     return domain_entry
+
+
+def is_public_host(host: str) -> bool:
+    """Return True when *host* resolves only to globally routable addresses."""
+    host = host.lower().rstrip(".")
+    if not host or host == "localhost":
+        return False
+    if host.endswith((".local", ".internal", ".localhost")):
+        return False
+    try:
+        literal = ipaddress.ip_address(host)
+    except ValueError:
+        try:
+            infos = socket.getaddrinfo(host, None)
+        except OSError:
+            return False
+        addresses = {info[4][0] for info in infos}
+    else:
+        addresses = {str(literal)}
+    if not addresses:
+        return False
+    for address in addresses:
+        try:
+            if not ipaddress.ip_address(address).is_global:
+                return False
+        except ValueError:
+            return False
+    return True
 
 
 def fetch_urls_from_source(source: str) -> list[str]:
@@ -160,34 +204,96 @@ def parse_raw_text(content: str) -> list[str]:
     ]
 
 
+def extract_version(value: str) -> str:
+    """Return a version-like string found in *value*, or an empty string."""
+    for pattern in VERSION_PATTERNS:
+        match = pattern.search(value)
+        if match:
+            return match.group(1).strip(".-")
+    return ""
+
+
+def extract_asset_url(html: str, signature: str) -> str:
+    """Return the URL of the asset that contains *signature*, if available."""
+    for match in ASSET_PATTERN.finditer(html):
+        url = unescape(match.group(1))
+        if signature in url.lower():
+            return url[:300]
+
+    index = html.lower().find(signature)
+    if index == -1:
+        return ""
+    window = html[max(0, index - 250):index + 250]
+    for match in URL_PATTERN.finditer(window):
+        url = unescape(match.group(0)).rstrip("),;")
+        if signature in url.lower():
+            return url[:300]
+    return ""
+
+
+def overlay_version_label(overlays: list[dict]) -> str:
+    """Format overlay names and versions for the CSV version column."""
+    return "; ".join(
+        f"{item['name']} {item['version'] or 'unknown'}"
+        for item in overlays
+    )
+
+
+def detect_overlays(html: str) -> list[dict]:
+    """Return detected overlays with best-effort version and evidence URL."""
+    html_lower = html.lower()
+    found = []
+    for name, signatures in OVERLAY_SIGNATURES.items():
+        for signature in signatures:
+            if signature not in html_lower:
+                continue
+            evidence = extract_asset_url(html, signature)
+            found.append({
+                "name": name,
+                "version": extract_version(evidence),
+                "evidence": evidence,
+            })
+            break
+    return found
+
+
 def scan_domain(url: str) -> dict:
     """Fetch *url* and check its HTML for known overlay and widget signatures.
 
-    Returns a dict with keys: ``url``, ``status``, ``detected_overlay``, and
+    Returns a dict with ``url``, ``final_url``, ``status``,
+    ``detected_overlay``, ``overlays``, ``overlay_versions``, and
     ``other_widgets``.  ``status`` is either the HTTP status code or a short
-    error string (``"Timeout"``, ``"Conn Error"``, ``"Error"``).
+    error string (``"Timeout"``, ``"Conn Error"``, ``"Blocked"``, ``"Error"``).
+    Each overlay entry contains ``name``, ``version``, and ``evidence``.
     """
     result = {
         "url": url,
+        "final_url": url,
         "status": "Error",
         "detected_overlay": "None Found",
-        "other_widgets": []
+        "overlays": [],
+        "overlay_versions": "",
+        "other_widgets": ""
     }
 
     try:
+        host = urlparse(url).hostname or ""
+        if not is_public_host(host):
+            result["status"] = "Blocked"
+            return result
         r = requests.get(url, headers=HEADERS, timeout=10)
         html_lower = r.text.lower()
         result["status"] = r.status_code
+        result["final_url"] = r.url
 
-        found_overlays = []
-        for name, sigs in OVERLAY_SIGNATURES.items():
-            for sig in sigs:
-                if sig in html_lower:
-                    found_overlays.append(name)
-                    break
+        overlays = detect_overlays(r.text)
+        result["overlays"] = overlays
+        result["overlay_versions"] = overlay_version_label(overlays)
 
-        if found_overlays:
-            result["detected_overlay"] = ", ".join(found_overlays)
+        if overlays:
+            result["detected_overlay"] = ", ".join(
+                item["name"] for item in overlays
+            )
         else:
             result["detected_overlay"] = "None Found"
 
@@ -228,11 +334,26 @@ def generate_filename(source_input: str) -> str:
     return f"{base_name}-overlays-{today}.csv"
 
 
+def write_json_results(source: str, results: list[dict], filename: str) -> None:
+    """Write full scan results and metadata to *filename* as JSON."""
+    payload = {
+        "source": source,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "results": results,
+    }
+    try:
+        with open(filename, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2, ensure_ascii=False)
+        print(f"JSON results saved to: {filename}")
+    except OSError:
+        print(f"Error: Could not write JSON to {filename}.")
+
+
 def main() -> None:
     """Parse arguments, scan domains, and report results.
 
-    Reads a source of domain names (local file or remote URL), scans each for
-    overlay signatures, prints a live progress table, optionally saves a CSV,
+    Reads a source of URLs (local file or remote URL), scans each for overlay
+    signatures, prints a live progress table, optionally writes CSV and JSON,
     and prints summary statistics.
     """
     parser = argparse.ArgumentParser(
@@ -247,11 +368,15 @@ def main() -> None:
     )
     parser.add_argument(
         "--no-csv", action="store_true",
-        help="Do not generate a CSV file (stats only)"
+        help="Do not generate a CSV file"
+    )
+    parser.add_argument(
+        "--json", dest="json_output", metavar="PATH",
+        help="Write full results, including overlay versions, as JSON"
     )
     parser.add_argument(
         "--limit", type=int, default=None,
-        help="Limit number of unique domains to scan"
+        help="Limit number of unique URLs to scan"
     )
 
     if len(sys.argv) == 1:
@@ -262,10 +387,10 @@ def main() -> None:
 
     # 1. Get URLs
     raw_urls = fetch_urls_from_source(args.source)
-    unique_urls = list(set(raw_urls))
+    unique_urls = sorted(dict.fromkeys(raw_urls))
     if args.limit is not None and args.limit > 0:
         unique_urls = unique_urls[:args.limit]
-    print(f"Found {len(unique_urls)} unique domains to scan.")
+    print(f"Found {len(unique_urls)} unique URLs to scan.")
 
     # 2. Stats Containers
     stats_status: Counter = Counter()
@@ -274,7 +399,7 @@ def main() -> None:
 
     # 3. Scan
     results = []
-    print(f"{'Domain':<40} | {'Status':<10} | {'Overlay Detected'}")
+    print(f"{'URL':<40} | {'Status':<10} | {'Overlay Detected'}")
     print("-" * 80)
 
     for url in unique_urls:
@@ -305,10 +430,15 @@ def main() -> None:
 
         if args.simple:
             keys = ["url", "detected_overlay"]
-            csv_results = [{k: row[k] for k in keys} for row in results]
         else:
-            keys = ["url", "status", "detected_overlay", "other_widgets"]
-            csv_results = results
+            keys = [
+                "url", "status", "detected_overlay",
+                "overlay_versions", "other_widgets",
+            ]
+        csv_results = [
+            {key: row.get(key, "") for key in keys}
+            for row in results
+        ]
 
         try:
             with open(final_filename, "w", newline="", encoding="utf-8") as f:
@@ -320,6 +450,9 @@ def main() -> None:
             print(f"\nError: Could not write to {final_filename}. Check permissions.")
     else:
         print("\nScan complete. CSV generation skipped (--no-csv).")
+
+    if args.json_output:
+        write_json_results(args.source, results, args.json_output)
 
     # 5. Print Final Stats
     print("\n" + "=" * 40)

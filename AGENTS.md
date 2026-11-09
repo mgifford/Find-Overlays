@@ -18,14 +18,15 @@ If this file and `ACCESSIBILITY.md` disagree about output or documentation,
 
 `find-overlay.py` scans a list of URLs (a local CSV/XML/text file or a remote
 sitemap/CSV) and reports which known accessibility-overlay products are
-referenced in the returned HTML. It writes a timestamped CSV and prints a
-summary.
+referenced in the returned HTML. It writes a timestamped CSV, can write JSON,
+and feeds a static results site published with GitHub Pages from `site/`.
 
 It is **not** an accessibility test. Never describe a scan as an audit,
 certification, conformance claim, or proof that a site is accessible or
 inaccessible. Results are indicators, and false negatives are expected.
 
-There is no web UI, no runtime AI, and no telemetry.
+There is no runtime AI and no telemetry. The public site is static HTML/CSS/JS
+with no third-party scripts.
 
 ## Setup and commands
 
@@ -35,13 +36,17 @@ Dependencies are managed with `uv`:
 uv sync
 uv run find-overlay.py samples/sample-domains.csv --limit 5 --no-csv
 uv run pytest
-uv run flake8 find-overlay.py
+uv run flake8 find-overlay.py scripts tests
 uv run bandit -c pyproject.toml -r find-overlay.py
 uv audit
 ```
 
 - Tests must stay offline. Mock `requests.get`; never add live-network tests.
-- Do not commit `.venv/`, `__pycache__/`, or `*-overlays-*.csv` scan output.
+- Do not commit `.venv/`, `__pycache__/`, `scan.json`, or `*-overlays-*.csv`
+  scan output.
+- `site/index.html` and `site/data/` are generated. Change
+  `site/template.html`, `site/styles.css`, `site/app.js`, or
+  `scripts/build_site.py` instead, then rebuild.
 - If `uv` cannot write its cache, set `UV_CACHE_DIR` to a writable directory
   rather than changing project files.
 
@@ -61,7 +66,8 @@ Follow **[PYTHON_GUIDANCE.md](PYTHON_GUIDANCE.md)**. Key points:
 - Keep lines at or under 88 characters (enforced by `.flake8`).
 - Catch specific exceptions. Never use a bare `except:` and avoid `except
   Exception` where a narrower type is available.
-- Run `uv run flake8 find-overlay.py` and `uv run pytest` before finishing.
+- Run `uv run flake8 find-overlay.py scripts tests` and `uv run pytest`
+  before finishing.
 
 ## Accessibility requirements
 
@@ -75,9 +81,9 @@ The full contract is in [ACCESSIBILITY.md](ACCESSIBILITY.md). In short:
 - Keep the interactive prompt optional. Passing a source argument must remain
   fully non-interactive, with no timeout.
 - Keep CSV output UTF-8 with a header row and stable column names:
-  `url,status,detected_overlay,other_widgets`, or `url,detected_overlay` with
-  `--simple`. Document any schema change in `README.md` and
-  `ACCESSIBILITY.md`.
+  `url,status,detected_overlay,overlay_versions,other_widgets`, or
+  `url,detected_overlay` with `--simple`. Document any schema change in
+  `README.md` and `ACCESSIBILITY.md`.
 - Error messages should name the source and the next step. Do not print raw
   HTML, stack traces, or untrusted content as instructions.
 - Documentation uses plain language, one H1, no skipped heading levels, and
@@ -104,10 +110,30 @@ new code, and fix it when a change touches the area.
   deadline. Do not claim a scan is time-bounded.
 - Remote CSV/XML is untrusted. Bound response size, keep TLS verification on,
   do not resolve XML entities, and prefer `defusedxml` if XML handling grows.
+- The public-host guard checks the initial URL only; `requests` still follows
+  redirects. Do not treat it as a complete SSRF defence for untrusted input.
 - Only scan domains you are authorised to test. Respect robots.txt, site terms,
   and rate limits; do not add concurrency without a documented reason.
 - Identify the tool honestly in the User-Agent when changing request headers,
   rather than impersonating a browser version.
+
+## Site and issue automation
+
+- `data/sites.csv` is the public scan queue. Only add public http(s) URLs.
+- Scan requests arrive through `.github/ISSUE_TEMPLATE/scan-request.yml` and
+  are queued only after a maintainer applies the `approved` label. Never
+  auto-approve, and never scan private, internal, or non-public hosts.
+- `.github/workflows/queue-scan-request.yml` validates submissions, appends to
+  the queue, commits, and dispatches the scan workflow.
+- `.github/workflows/scan-and-publish.yml` scans, writes history, commits
+  `site/`, and deploys GitHub Pages.
+- `data/providers.json` holds sourced provider context. Do not add an
+  allegation without a credible source; label context as third-party and not
+  legal advice.
+- Keep the site usable without JavaScript. The findings table is rendered at
+  build time; JavaScript only filters it.
+- Preserve table captions, `scope` attributes, skip link, visible focus, and
+  text equivalents for status and version information.
 
 ## Security and supply-chain practices
 
@@ -130,7 +156,7 @@ new code, and fix it when a change touches the area.
   [`.github/workflows/security.yml`](.github/workflows/security.yml) without a
   documented reason.
 - Run linting and tests before committing:
-  - `uv run flake8 find-overlay.py`
+  - `uv run flake8 find-overlay.py scripts tests`
   - `uv run pytest`
 
 ## Review checklist
@@ -138,7 +164,7 @@ new code, and fix it when a change touches the area.
 - [ ] Public functions have docstrings and type annotations.
 - [ ] No function exceeds ~50 lines (docstring excluded) or 88 characters per
       line.
-- [ ] `uv run flake8 find-overlay.py` and `uv run pytest` pass.
+- [ ] `uv run flake8 find-overlay.py scripts tests` and `uv run pytest` pass.
 - [ ] `uv run bandit -c pyproject.toml -r find-overlay.py` reports no issues.
 - [ ] `uv audit` reports no known vulnerabilities.
 - [ ] Console output remains plain text and colour-independent.
@@ -148,3 +174,5 @@ new code, and fix it when a change touches the area.
 - [ ] No secrets, private data, or generated scan files are included.
 - [ ] `ACCESSIBILITY.md` and `SBOM.md` are updated when scope or dependencies
       change.
+- [ ] Generated `site/index.html` and `site/data/` were rebuilt from the
+      template and scan data.
