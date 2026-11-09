@@ -18,6 +18,13 @@
     "date": "2026-11-09",
     "url": "https://syracuseut.gov",
     "kind": "status_changed",
+    "from": "Timeout",
+    "to": "200"
+  },
+  {
+    "date": "2026-11-09",
+    "url": "https://syracuseut.gov",
+    "kind": "status_changed",
     "from": "200",
     "to": "Timeout"
   },
@@ -60,6 +67,13 @@
     "date": "2026-11-09",
     "url": "https://apple.com",
     "kind": "site_added"
+  },
+  {
+    "date": "2026-11-09",
+    "url": "https://amazon.com",
+    "kind": "status_changed",
+    "from": "200",
+    "to": "202"
   },
   {
     "date": "2026-11-09",
