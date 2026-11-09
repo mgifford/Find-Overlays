@@ -17,6 +17,13 @@
   {
     "date": "2026-11-09",
     "url": "https://syracuseut.gov",
+    "kind": "status_changed",
+    "from": "200",
+    "to": "Timeout"
+  },
+  {
+    "date": "2026-11-09",
+    "url": "https://syracuseut.gov",
     "kind": "site_added"
   },
   {

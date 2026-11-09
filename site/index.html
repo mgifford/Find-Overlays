@@ -40,8 +40,8 @@
     <section aria-labelledby="latest-heading">
       <h2 id="latest-heading">Latest scan</h2>
       <p>Scan date: <time datetime="2026-11-09">2026-11-09</time>.
-        Built <time datetime="2026-11-09T23:37:14.465135+00:00">2026-11-09T23:37:14.465135+00:00</time>.</p>
-      <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">2</strong></li></ul>
+        Built <time datetime="2026-11-09T23:39:16.424431+00:00">2026-11-09T23:39:16.424431+00:00</time>.</p>
+      <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">1</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">1</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">3</strong></li></ul>
     </section>
 
     <section id="findings" aria-labelledby="findings-heading">
@@ -80,7 +80,7 @@
 <tr><th scope="row"><a href="https://google.com" rel="noopener noreferrer">google.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
 <tr><th scope="row"><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">UserWay <span class="version unknown">version unknown</span> <a class="evidence" href="https://cdn.userway.org/widget.js" rel="noopener noreferrer" aria-label="Evidence for UserWay">asset</a></span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
 <tr><th scope="row"><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></th><td><span class="status warn">403</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
-<tr><th scope="row"><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">AudioEye <span class="version unknown">version unknown</span> <a class="evidence" href="https://wsmcdn.audioeye.com/aem.js" rel="noopener noreferrer" aria-label="Evidence for AudioEye">asset</a></span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
+<tr><th scope="row"><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></th><td><span class="status warn">Timeout</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
 <tr><th scope="row"><a href="https://twitter.com" rel="noopener noreferrer">twitter.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
 <tr><th scope="row"><a href="https://wikipedia.org" rel="noopener noreferrer">wikipedia.org</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
 <tr><th scope="row"><a href="https://www.microsoft.com" rel="noopener noreferrer">www.microsoft.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-09</td></tr>
@@ -98,7 +98,7 @@
       <h2 id="changes-heading">Changes over time</h2>
       <p>
         Each scheduled scan compares its result with the previous snapshot.
-        The table shows the most recent 12 events; the
+        The table shows the most recent 13 events; the
         <a href="data/changes.json">change log JSON</a> has the full retained
         history.
       </p>
@@ -116,6 +116,7 @@
             <tr><td>2026-11-09</td><td><a href="https://www.microsoft.com" rel="noopener noreferrer">www.microsoft.com</a></td><td>Added to the scan list</td></tr>
 <tr><td>2026-11-09</td><td><a href="https://wikipedia.org" rel="noopener noreferrer">wikipedia.org</a></td><td>Added to the scan list</td></tr>
 <tr><td>2026-11-09</td><td><a href="https://twitter.com" rel="noopener noreferrer">twitter.com</a></td><td>Added to the scan list</td></tr>
+<tr><td>2026-11-09</td><td><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></td><td>Status changed from 200 to Timeout</td></tr>
 <tr><td>2026-11-09</td><td><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></td><td>Added to the scan list</td></tr>
 <tr><td>2026-11-09</td><td><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></td><td>Added to the scan list</td></tr>
 <tr><td>2026-11-09</td><td><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></td><td>Added to the scan list</td></tr>
@@ -156,8 +157,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">AudioEye</th><td><a href="https://www.audioeye.com/" rel="noopener noreferrer">website</a></td><td><a href="#general-concerns">general concerns</a></td></tr>
-<tr><th scope="row">UserWay</th><td><a href="https://userway.org/" rel="noopener noreferrer">website</a></td><td><a href="#general-concerns">general concerns</a></td></tr>
+            <tr><th scope="row">UserWay</th><td><a href="https://userway.org/" rel="noopener noreferrer">website</a></td><td><a href="#general-concerns">general concerns</a></td></tr>
           </tbody>
         </table>
       </div>

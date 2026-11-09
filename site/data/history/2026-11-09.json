@@ -1,12 +1,12 @@
 {
   "scan_date": "2026-11-09",
-  "generated_at": "2026-11-09T23:37:14.465135+00:00",
+  "generated_at": "2026-11-09T23:39:16.424431+00:00",
   "source": "data/sites.csv",
   "summary": {
     "sites": 12,
-    "with_overlays": 2,
-    "overlay_count": 2,
-    "errors": 2
+    "with_overlays": 1,
+    "overlay_count": 1,
+    "errors": 3
   },
   "results": [
     {
@@ -105,18 +105,12 @@
     },
     {
       "url": "https://syracuseut.gov",
-      "final_url": "https://syracuseut.gov/",
-      "status": 200,
-      "detected_overlay": "AudioEye",
-      "overlays": [
-        {
-          "name": "AudioEye",
-          "version": "",
-          "evidence": "https://wsmcdn.audioeye.com/aem.js"
-        }
-      ],
-      "overlay_versions": "AudioEye unknown",
-      "other_widgets": "Zendesk",
+      "final_url": "https://syracuseut.gov",
+      "status": "Timeout",
+      "detected_overlay": "None Found",
+      "overlays": [],
+      "overlay_versions": "",
+      "other_widgets": "",
       "first_seen": "2026-11-09",
       "last_seen": "2026-11-09"
     },
@@ -144,7 +138,7 @@
     },
     {
       "url": "https://www.microsoft.com",
-      "final_url": "https://www.microsoft.com/",
+      "final_url": "https://www.microsoft.com/en-us",
       "status": 200,
       "detected_overlay": "None Found",
       "overlays": [],
