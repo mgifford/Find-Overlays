@@ -10,8 +10,10 @@ on:
     paths:
       - "data/**"
       - "find-overlay.py"
+      - "pyproject.toml"
       - "scripts/**"
       - "site/**"
+      - "uv.lock"
 
 permissions:
   contents: read

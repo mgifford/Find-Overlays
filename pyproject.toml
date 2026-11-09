@@ -23,3 +23,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests"]
+
+[tool.setuptools]
+packages = []
+py-modules = []
