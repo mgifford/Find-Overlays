@@ -228,6 +228,7 @@ Before opening a pull request:
 |---|---|---|---|---|
 | `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, site builder, and CLI tests | Local / pre-PR | 87 tests passing on 2026-11-09 |
 | `flake8` | 7.5.0 (7.4.1 on Python 3.10) | Style and lint, 88-character lines | Local / pre-PR | Passing on 2026-11-09 |
+| `axe-core` | 4.10.2 | Static site at 360px and 1280px | Manual local run | 0 violations on 2026-11-09; not in CI |
 | GitHub Actions | — | Tests/security scans and Pages deployment | Push, PR, schedule | Configured; no accessibility scanner yet |
 
 Commands:
@@ -237,9 +238,10 @@ uv run pytest
 uv run flake8 find-overlay.py scripts tests
 ```
 
-Automated checks do not test accessibility. The Pages site is static HTML, but
-axe-core is not wired into CI yet; add it together with a manual review before
-claiming the site has been evaluated.
+Automated checks do not test accessibility by themselves. A manual local
+axe-core 4.10.2 run against the static site at 360px and 1280px reported no
+violations on 2026-11-09. axe-core is not wired into CI yet; add it together
+with a manual review before claiming the site has been evaluated.
 
 ### Manual checks
 
@@ -325,7 +327,7 @@ precedence over feature work.
 | Overlay versions are best-effort | Moderate | A version may be missing or wrong | Treat versions as indicators; check the evidence link | No issue yet |
 | Only initial HTML is scanned | Moderate | Runtime-injected overlays can be missed | Treat a clean result as “not observed”, not proof of absence | No issue yet |
 | Site data changes only when a scan runs | Minor | Findings can be up to a week old | Check the scan date and history | No issue yet |
-| No automated axe-core check for the site | Moderate | Structural regressions may go unnoticed | Manual keyboard and screen-reader review | No issue yet |
+| axe-core is not in CI for the site | Moderate | Structural regressions may go unnoticed | Manual axe-core, keyboard, and screen-reader review | No issue yet |
 | Redirected output on Windows may fail on non-ASCII input | Moderate | A scan can end with `UnicodeEncodeError` | Set `PYTHONIOENCODING=utf-8` | No issue yet |
 | Documentation and site content are English only | Minor | Non-English readers must translate | Machine translation | No issue yet |
 
@@ -369,6 +371,7 @@ accessibility metrics and must not be presented as such.
 |---|---|---|
 | 2026-11-09 | Initial version, drafted alongside a code review | Pending maintainer review |
 | 2026-11-09 | Added the public Pages site, scan requests, and history to scope | Pending maintainer review |
+| 2026-11-09 | Manual axe-core run at 360px and 1280px reported no violations | Pending maintainer review |
 
 ## 16. References
 
