@@ -35,6 +35,11 @@
       "title": "FTC: accessiBe final order (provider example)",
       "url": "https://search.ftc.gov/news-events/news/press-releases/2025/04/ftc-approves-final-order-requiring-accessibe-pay-1-million",
       "note": "In 2025 the FTC approved a final order requiring accessiBe to pay $1 million over deceptive claims that its AI product could make websites compliant with accessibility guidelines. This is one example of a provider-specific action, not a finding about any site listed here."
+    },
+    {
+      "title": "Adrian Roselli: overlay posts",
+      "url": "https://adrianroselli.com/tag/overlay",
+      "note": "A long-running archive of technical and legal commentary on specific overlay vendors. Individual posts are the author's analysis and opinion."
     }
   ],
   "providers": {
