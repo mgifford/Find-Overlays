@@ -1,6 +1,6 @@
 {
-  "scan_date": "2026-11-09",
-  "generated_at": "2026-11-09T23:51:59.709346+00:00",
+  "scan_date": "2026-11-16",
+  "generated_at": "2026-11-16T13:50:03.571655+00:00",
   "source": "data/sites.csv",
   "summary": {
     "sites": 12,
@@ -18,7 +18,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://apple.com",
@@ -29,7 +29,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://bbc.co.uk",
@@ -40,7 +40,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://cnn.com",
@@ -51,7 +51,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://facebook.com",
@@ -62,7 +62,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://google.com",
@@ -73,7 +73,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://independencemo.gov",
@@ -90,7 +90,7 @@
       "overlay_versions": "UserWay unknown",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://nytimes.com",
@@ -101,7 +101,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://syracuseut.gov",
@@ -118,7 +118,7 @@
       "overlay_versions": "AudioEye unknown",
       "other_widgets": "Zendesk",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://twitter.com",
@@ -129,7 +129,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://wikipedia.org",
@@ -140,7 +140,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     },
     {
       "url": "https://www.microsoft.com",
@@ -151,7 +151,7 @@
       "overlay_versions": "",
       "other_widgets": "",
       "first_seen": "2026-11-09",
-      "last_seen": "2026-11-09"
+      "last_seen": "2026-11-16"
     }
   ]
 }
