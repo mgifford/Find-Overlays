@@ -232,7 +232,7 @@ They include rejected entries and distinguish a failed scan from a clean one.
 
 - The scanner uses a 5-second connection timeout and a 10-second read timeout.
   These are inactivity limits, not a total scan deadline.
-- Responses are capped at 2 MB. At most five redirects are followed, and each
+- Responses are capped at 10 MB. At most five redirects are followed, and each
   redirect destination is validated before it is requested.
 - Requests are sequential. The issue workflow adds a short delay between
   requests and a 20-minute scan budget; remaining sites are marked as skipped.
