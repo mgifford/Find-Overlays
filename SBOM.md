@@ -14,7 +14,7 @@ licenses, and version-control references to support legal and security review.
 
 * Repository: `mgifford/Find-Overlays`
 * Branch at last update: `main`
-* Commit at last update: `c9a2b35` (working tree updated 2026-11-19)
+* Commit at last update: `6154ce8` (2026-11-19)
 * Lock source: `uv.lock`
 * Requirements export source: `requirements.txt`
 
