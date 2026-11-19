@@ -1,0 +1,101 @@
+url,status,outcome,detected_overlay,overlay_versions,other_widgets,error
+https://u.ae,200,inspected,UserWay,UserWay unknown,Intercom,
+https://uaecabinet.ae,403,http_error,Not determined,,,HTTP 403
+https://uaelegislation.gov.ae,403,http_error,Not determined,,,HTTP 403
+https://bayanat.ae,200,inspected,UserWay,UserWay unknown,,
+https://wam.ae,200,inspected,None Found,,,
+https://abudhabi.gov.ae,200,inspected,None Found,,,
+https://tamm.abudhabi,200,inspected,None Found,,,
+https://mediaoffice.ae,200,inspected,None Found,,,
+https://sharjah.gov.ae,200,inspected,None Found,,,
+https://fujairah.ae,200,inspected,EqualWeb,EqualWeb unknown,,
+https://mofa.gov.ae,Conn Error,connection_error,Not determined,,,connection failed
+https://moi.gov.ae,200,inspected,None Found,,,
+https://mod.gov.ae,503,http_error,Not determined,,,HTTP 503
+https://mof.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://moet.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://mohap.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://moe.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://mohesr.gov.ae,200,inspected,None Found,,,
+https://mohre.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://moei.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://moiat.gov.ae,200,inspected,None Found,,,
+https://moccae.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://mocd.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://moc.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://tolerance.gov.ae,200,inspected,None Found,,,
+https://moca.gov.ae,403,http_error,Not determined,,,HTTP 403
+https://tdra.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://icp.gov.ae,200,inspected,None Found,,HubSpot,
+https://tax.gov.ae,200,inspected,None Found,,,
+https://pp.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://centralbank.ae,200,inspected,None Found,,,
+https://fahr.gov.ae,200,inspected,None Found,,,
+https://fcsa.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://gcaa.gov.ae,200,inspected,None Found,,,
+https://space.gov.ae,403,http_error,Not determined,,,HTTP 403
+https://awqaf.gov.ae,200,inspected,None Found,,,
+https://mfnca.gov.ae,200,inspected,None Found,,,
+https://epg.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://emiratespost.ae,403,http_error,Not determined,,,HTTP 403
+https://nma.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://etihadwe.ae,200,inspected,UserWay,UserWay unknown,,
+https://pchr.gov.ae,200,inspected,None Found,,,
+https://economy.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://economy.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://ica.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://adaa.gov.ae,200,inspected,None Found,,,
+https://adaa.abudhabi.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://adjd.gov.ae,404,http_error,Not determined,,,HTTP 404
+https://adpolice.gov.ae,200,inspected,None Found,,,
+https://adcustoms.gov.ae,200,inspected,None Found,,,
+https://adafsa.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://ead.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://actvet.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://adcci.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://abudhabichamber.ae,200,inspected,None Found,,,
+https://ewaa.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://adawqaf.gov.ae,200,inspected,None Found,,,
+https://dctabudhabi.ae,200,inspected,AccessiBe,AccessiBe unknown,,
+https://addc.ae,403,http_error,Not determined,,,HTTP 403
+https://admedia.ae,200,inspected,UserWay,UserWay unknown,,
+https://adports.ae,200,inspected,None Found,,,
+https://dubaipolice.gov.ae,200,inspected,None Found,,,
+https://dcd.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://dc.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://dubaicourts.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://dxbpp.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://legal.dubai.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://dm.gov.ae,200,inspected,None Found,,,
+https://rta.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://dewa.gov.ae,403,http_error,Not determined,,,HTTP 403
+https://dha.gov.ae,200,inspected,None Found,,,
+https://dubailand.gov.ae,200,inspected,UserWay,UserWay unknown,,
+https://rera.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://gdrfad.gov.ae,200,inspected,None Found,,,
+https://khda.gov.ae,200,inspected,None Found,,,
+https://dubaicustoms.gov.ae,200,inspected,None Found,,,
+https://dcaa.gov.ae,200,inspected,None Found,,,
+https://tec.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://dubaicareers.ae,200,inspected,None Found,,,
+https://ec.shj.ae,200,inspected,None Found,,,
+https://ccsharjah.gov.ae,200,inspected,None Found,,,
+https://shjmun.gov.ae,200,inspected,None Found,,,
+https://shjpolice.gov.ae,200,inspected,None Found,,,
+https://sharjahcustoms.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://sfd.gov.ae,200,inspected,None Found,,,
+https://smc.ae,200,inspected,None Found,,,
+https://dca.shj.ae,200,inspected,None Found,,,
+https://srta.gov.ae,200,inspected,None Found,,,
+https://hfza.ae,200,inspected,None Found,,,
+https://am.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://ajmanpolice.gov.ae,200,inspected,None Found,,,
+https://afz.gov.ae,200,inspected,None Found,,,
+https://rakpolice.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://courts.rak.ae,200,inspected,None Found,,,
+https://fujmun.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
+https://fujairahpolice.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://fujcustoms.gov.ae,200,inspected,None Found,,,
+https://dedf.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
+https://fnrc.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://uaqpolice.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out

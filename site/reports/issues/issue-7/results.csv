@@ -1,8 +1,8 @@
 url,status,outcome,detected_overlay,overlay_versions,other_widgets,error
-https://u.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://u.ae,200,inspected,UserWay,UserWay unknown,Intercom,
 https://uaecabinet.ae,403,http_error,Not determined,,,HTTP 403
 https://uaelegislation.gov.ae,403,http_error,Not determined,,,HTTP 403
-https://bayanat.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://bayanat.ae,200,inspected,UserWay,UserWay unknown,,
 https://wam.ae,200,inspected,None Found,,,
 https://abudhabi.gov.ae,200,inspected,None Found,,,
 https://tamm.abudhabi,200,inspected,None Found,,,
@@ -11,21 +11,21 @@ https://sharjah.gov.ae,200,inspected,None Found,,,
 https://fujairah.ae,200,inspected,EqualWeb,EqualWeb unknown,,
 https://mofa.gov.ae,Conn Error,connection_error,Not determined,,,connection failed
 https://moi.gov.ae,200,inspected,None Found,,,
-https://mod.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://mod.gov.ae,503,http_error,Not determined,,,HTTP 503
 https://mof.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://moet.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
 https://mohap.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
 https://moe.gov.ae,200,inspected,UserWay,UserWay unknown,,
-https://mohesr.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://mohesr.gov.ae,200,inspected,None Found,,,
 https://mohre.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
 https://moei.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
-https://moiat.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
-https://moccae.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://moiat.gov.ae,200,inspected,None Found,,,
+https://moccae.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://mocd.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
 https://moc.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://tolerance.gov.ae,200,inspected,None Found,,,
 https://moca.gov.ae,403,http_error,Not determined,,,HTTP 403
-https://tdra.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://tdra.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://icp.gov.ae,200,inspected,None Found,,HubSpot,
 https://tax.gov.ae,200,inspected,None Found,,,
 https://pp.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
@@ -38,7 +38,7 @@ https://awqaf.gov.ae,200,inspected,None Found,,,
 https://mfnca.gov.ae,200,inspected,None Found,,,
 https://epg.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
 https://emiratespost.ae,403,http_error,Not determined,,,HTTP 403
-https://nma.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
+https://nma.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://etihadwe.ae,200,inspected,UserWay,UserWay unknown,,
 https://pchr.gov.ae,200,inspected,None Found,,,
 https://economy.gov.ae,TLS Error,tls_error,Not determined,,,TLS verification failed
@@ -68,7 +68,7 @@ https://dxbpp.gov.ae,Timeout,timeout,Not determined,,,connection or read timed o
 https://legal.dubai.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://dm.gov.ae,200,inspected,None Found,,,
 https://rta.gov.ae,DNS Error,dns_error,Not determined,,,DNS resolution failed
-https://dewa.gov.ae,200,inspected,None Found,,,
+https://dewa.gov.ae,403,http_error,Not determined,,,HTTP 403
 https://dha.gov.ae,200,inspected,None Found,,,
 https://dubailand.gov.ae,200,inspected,UserWay,UserWay unknown,,
 https://rera.gov.ae,Timeout,timeout,Not determined,,,connection or read timed out
