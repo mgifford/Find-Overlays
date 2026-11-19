@@ -10,6 +10,13 @@
     "date": "2026-11-19",
     "url": "https://cnn.com",
     "kind": "status_changed",
+    "from": "Response Too Large",
+    "to": "200"
+  },
+  {
+    "date": "2026-11-19",
+    "url": "https://cnn.com",
+    "kind": "status_changed",
     "from": "200",
     "to": "Response Too Large"
   },

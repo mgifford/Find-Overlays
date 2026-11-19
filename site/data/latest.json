@@ -1,12 +1,12 @@
 {
   "scan_date": "2026-11-19",
-  "generated_at": "2026-11-19T18:05:01.775532+00:00",
+  "generated_at": "2026-11-19T18:06:53.778645+00:00",
   "source": "data/sites.csv",
   "summary": {
     "sites": 12,
     "with_overlays": 2,
     "overlay_count": 2,
-    "errors": 2
+    "errors": 1
   },
   "results": [
     {
@@ -57,12 +57,12 @@
     {
       "url": "https://cnn.com",
       "final_url": "https://www.cnn.com/",
-      "status": "Response Too Large",
+      "status": 200,
       "http_status": 200,
-      "outcome": "response_too_large",
+      "outcome": "inspected",
       "content_type": "text/html; charset=utf-8",
-      "error": "Response exceeds 2000000 bytes",
-      "detected_overlay": "Not determined",
+      "error": "",
+      "detected_overlay": "None Found",
       "overlays": [],
       "overlay_versions": "",
       "other_widgets": "",
