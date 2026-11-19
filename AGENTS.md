@@ -36,12 +36,12 @@ Dependencies are managed with `uv`:
 uv sync
 uv run find-overlay.py samples/sample-domains.csv --limit 5 --no-csv
 uv run pytest
-uv run flake8 find-overlay.py scripts tests
-uv run bandit -c pyproject.toml -r find-overlay.py scripts
+uv run flake8 find-overlay.py overlay_safety.py scripts tests
+uv run bandit -c pyproject.toml -r find-overlay.py overlay_safety.py scripts
 uv audit
 ```
 
-- Tests must stay offline. Mock `requests.get`; never add live-network tests.
+- Tests must stay offline. Mock `overlay_safety.safe_fetch` or `_request_once`; never add live-network tests.
 - Do not commit `.venv/`, `__pycache__/`, `scan.json`, or `*-overlays-*.csv`
   scan output.
 - `site/index.html` and `site/data/` are generated. Change
@@ -49,6 +49,9 @@ uv audit
   `scripts/build_site.py` instead, then rebuild.
 - If `uv` cannot write its cache, set `UV_CACHE_DIR` to a writable directory
   rather than changing project files.
+- Issue-scan code must use `overlay_safety.py` for normalization, public-host
+  validation, redirects, and response bounds. Do not add a second ad hoc URL
+  parser or a hostname-only security check.
 
 ## Python standards
 
@@ -66,7 +69,7 @@ Follow **[PYTHON_GUIDANCE.md](PYTHON_GUIDANCE.md)**. Key points:
 - Keep lines at or under 88 characters (enforced by `.flake8`).
 - Catch specific exceptions. Never use a bare `except:` and avoid `except
   Exception` where a narrower type is available.
-- Run `uv run flake8 find-overlay.py scripts tests` and `uv run pytest`
+- Run `uv run flake8 find-overlay.py overlay_safety.py scripts tests` and `uv run pytest`
   before finishing.
 
 ## Accessibility requirements
@@ -106,27 +109,34 @@ new code, and fix it when a change touches the area.
 - `list(set(...))` destroys input order and makes `--limit` select an
   arbitrary subset. Use `dict.fromkeys(...)` to deduplicate while preserving
   order.
-- `timeout=10` on `requests.get` is an inactivity timeout, not a total
-  deadline. Do not claim a scan is time-bounded.
+- Connection and read timeouts are inactivity limits, not a total deadline.
+  Use the workflow's scan budget when a total bound is required.
 - Remote CSV/XML is untrusted. Bound response size, keep TLS verification on,
   do not resolve XML entities, and prefer `defusedxml` if XML handling grows.
-- The public-host guard checks the initial URL only; `requests` still follows
-  redirects. Do not treat it as a complete SSRF defence for untrusted input.
+- Redirects are followed manually. Each destination is normalised, resolved,
+  checked against the public-address policy, and pinned to the validated IP
+  before connecting. Do not bypass `overlay_safety.safe_fetch` or re-enable
+  automatic redirects. Residual DNS rebinding is mitigated by IP pinning, but
+  the public-address policy still depends on the resolver's answers.
 - Only scan domains you are authorised to test. Respect robots.txt, site terms,
   and rate limits; do not add concurrency without a documented reason.
 - Identify the tool honestly in the User-Agent when changing request headers,
-  rather than impersonating a browser version.
+  rather than impersonating a browser version. `overlay_safety.USER_AGENT`
+  already does this.
 
 ## Site and issue automation
 
-- `data/sites.csv` is the public scan queue. Only add public http(s) URLs.
-- Scan requests arrive through `.github/ISSUE_TEMPLATE/scan-request.yml` and
-  are queued only after a maintainer applies the `approved` label. Never
-  auto-approve, and never scan private, internal, or non-public hosts.
-- `.github/workflows/queue-scan-request.yml` validates submissions, appends to
-  the queue, commits, and dispatches the scan workflow.
-- `.github/workflows/scan-and-publish.yml` scans, writes history, commits
-  `site/`, and deploys GitHub Pages.
+- `data/sites.csv` is the curated weekly monitoring list. Only add public
+  http(s) URLs, and edit it manually; issue requests must never modify it.
+- Anyone with a GitHub account can open a `SCAN:` issue through
+  `.github/ISSUE_TEMPLATE/scan-request.yml`. `.github/workflows/scan-request.yml`
+  validates the request in a read-only job, scans up to 100 public targets, and
+  publishes the report from a separate write-enabled job. There is no approval
+  label.
+- Issue reports live under `site/reports/issues/issue-<number>/`; they must
+  never overwrite `site/data/latest.json` or add entries to `data/sites.csv`.
+- `.github/workflows/scan-and-publish.yml` scans the curated list, writes
+  history, commits `site/`, and deploys GitHub Pages.
 - `data/providers.json` holds sourced provider context. Do not add an
   allegation without a credible source; label context as third-party and not
   legal advice.
@@ -147,7 +157,7 @@ new code, and fix it when a change touches the area.
 - Update [SBOM.md](SBOM.md) when dependencies change, and keep its version
   numbers in sync with `uv.lock` and `requirements.txt`.
 - Run Bandit and the dependency audit locally before committing:
-  - `uv run bandit -c pyproject.toml -r find-overlay.py scripts`
+  - `uv run bandit -c pyproject.toml -r find-overlay.py overlay_safety.py scripts`
   - `uv audit`
 - Do not add `# nosec` without a comment explaining the false positive. Prefer
   fixing the finding; for example, untrusted XML is parsed with `defusedxml`,
@@ -156,7 +166,7 @@ new code, and fix it when a change touches the area.
   [`.github/workflows/security.yml`](.github/workflows/security.yml) without a
   documented reason.
 - Run linting and tests before committing:
-  - `uv run flake8 find-overlay.py scripts tests`
+  - `uv run flake8 find-overlay.py overlay_safety.py scripts tests`
   - `uv run pytest`
 
 ## Review checklist
@@ -164,8 +174,8 @@ new code, and fix it when a change touches the area.
 - [ ] Public functions have docstrings and type annotations.
 - [ ] No function exceeds ~50 lines (docstring excluded) or 88 characters per
       line.
-- [ ] `uv run flake8 find-overlay.py scripts tests` and `uv run pytest` pass.
-- [ ] `uv run bandit -c pyproject.toml -r find-overlay.py scripts` reports no issues.
+- [ ] `uv run flake8 find-overlay.py overlay_safety.py scripts tests` and `uv run pytest` pass.
+- [ ] `uv run bandit -c pyproject.toml -r find-overlay.py overlay_safety.py scripts` reports no issues.
 - [ ] `uv audit` reports no known vulnerabilities.
 - [ ] Console output remains plain text and colour-independent.
 - [ ] CSV column names and encoding are unchanged, or the change is documented.

@@ -10,9 +10,18 @@ import sys
 import textwrap
 import types
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
+
+from overlay_safety import (
+    OUTCOME_CONNECTION_ERROR,
+    OUTCOME_HTTP_ERROR,
+    OUTCOME_INSPECTED,
+    OUTCOME_PRIVATE,
+    OUTCOME_TIMEOUT,
+    FetchResult,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -327,28 +336,43 @@ class TestFetchUrlsFromSource:
 
     def test_remote_url_success(self) -> None:
         """A successful remote fetch should return parsed URLs."""
-        mock_response = MagicMock()
-        mock_response.text = "example.com\ntest.org\n"
-        mock_response.raise_for_status = MagicMock()
-        with patch("requests.get", return_value=mock_response):
+        fetched = FetchResult(
+            "https://remote.example.com/list",
+            "https://remote.example.com/list",
+            200,
+            OUTCOME_INSPECTED,
+            body="example.com\ntest.org\n",
+            content_type="text/plain",
+        )
+        with patch.object(fo, "safe_fetch", return_value=fetched):
             result = fetch_urls_from_source("https://remote.example.com/list")
         assert "https://example.com" in result
 
     def test_remote_url_error_returns_empty_list(self) -> None:
         """A failed remote fetch should return an empty list (no exception)."""
-        import requests as req
-
-        with patch("requests.get", side_effect=req.exceptions.RequestException("fail")):
+        fetched = FetchResult(
+            "https://remote.example.com/list",
+            "https://remote.example.com/list",
+            None,
+            OUTCOME_TIMEOUT,
+            error="connection or read timed out",
+        )
+        with patch.object(fo, "safe_fetch", return_value=fetched):
             result = fetch_urls_from_source("https://remote.example.com/list")
         assert result == []
 
     def test_remote_csv_with_domain_column(self) -> None:
         """A remote CSV containing 'domain' should be parsed like a local CSV."""
         csv_body = "domain\nexample.com\ntest.org\n"
-        mock_response = MagicMock()
-        mock_response.text = csv_body
-        mock_response.raise_for_status = MagicMock()
-        with patch("requests.get", return_value=mock_response):
+        fetched = FetchResult(
+            "https://remote.example.com/list.csv",
+            "https://remote.example.com/list.csv",
+            200,
+            OUTCOME_INSPECTED,
+            body=csv_body,
+            content_type="text/csv",
+        )
+        with patch.object(fo, "safe_fetch", return_value=fetched):
             result = fetch_urls_from_source("https://remote.example.com/list.csv")
         assert "https://example.com" in result
 
@@ -384,48 +408,55 @@ class TestFetchUrlsFromSource:
 # ===========================================================================
 
 class TestScanDomain:
-    """Tests for scan_domain using mocked HTTP calls."""
+    """Tests for scan_domain using mocked fetch results."""
 
-    @pytest.fixture(autouse=True)
-    def _public_hosts(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Treat hosts as public unless a test overrides the check."""
-        monkeypatch.setattr(fo, "is_public_host", lambda host: True)
+    def _make_fetch(
+        self,
+        html: str = "",
+        status_code: int = 200,
+        outcome: str = OUTCOME_INSPECTED,
+        error: str = "",
+        content_type: str = "text/html",
+    ) -> FetchResult:
+        """Build a FetchResult for a mocked network call."""
+        return FetchResult(
+            "https://example.com",
+            "https://example.com",
+            status_code,
+            outcome,
+            body=html if outcome == OUTCOME_INSPECTED else "",
+            content_type=content_type,
+            error=error,
+        )
 
-    def _make_response(self, html: str, status_code: int = 200) -> MagicMock:
-        """Build a mock requests.Response."""
-        mock_resp = MagicMock()
-        mock_resp.text = html
-        mock_resp.status_code = status_code
-        return mock_resp
+    def _scan(self, fetched: FetchResult) -> dict:
+        """Run scan_domain with safe_fetch patched to return *fetched*."""
+        with patch.object(fo, "safe_fetch", return_value=fetched):
+            return scan_domain("https://example.com")
 
     def test_no_overlay_detected(self) -> None:
         """A page with no overlay signatures returns 'None Found'."""
-        html = "<html><body>Hello World</body></html>"
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch("<html><body>Hello World</body></html>"))
         assert result["detected_overlay"] == "None Found"
         assert result["status"] == 200
 
     def test_single_overlay_detected(self) -> None:
         """A page containing an AccessiBe signature reports that overlay."""
         html = '<script src="https://acsbapp.com/apps/app/dist/js/app.js"></script>'
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "AccessiBe" in result["detected_overlay"]
         assert result["status"] == 200
 
     def test_userway_overlay_detected(self) -> None:
         """A page containing a UserWay signature is detected."""
         html = '<script src="https://cdn.userway.org/widget.js"></script>'
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "UserWay" in result["detected_overlay"]
 
     def test_audioeye_overlay_detected(self) -> None:
         """A page containing an AudioEye signature is detected."""
         html = '<script src="https://webar.audioeye.com/ae.js"></script>'
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "AudioEye" in result["detected_overlay"]
 
     def test_multiple_overlays_detected(self) -> None:
@@ -434,16 +465,14 @@ class TestScanDomain:
             '<script src="https://acsbapp.com/app.js"></script>'
             '<script src="https://cdn.userway.org/widget.js"></script>'
         )
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "AccessiBe" in result["detected_overlay"]
         assert "UserWay" in result["detected_overlay"]
 
     def test_other_widget_detected(self) -> None:
         """Third-party widgets (e.g. Intercom) are captured in other_widgets."""
         html = '<script src="https://widget.intercom.io/widget.js"></script>'
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "Intercom" in result["other_widgets"]
         assert result["detected_overlay"] == "None Found"
 
@@ -453,76 +482,81 @@ class TestScanDomain:
             '<script src="https://static.zdassets.com/web_widget/latest/lc.js">'
             "</script>"
         )
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "Zendesk" in result["other_widgets"]
 
     def test_overlay_detection_is_case_insensitive(self) -> None:
         """Overlay detection should match regardless of HTML capitalisation."""
         html = "<SCRIPT SRC='HTTPS://ACSBAPP.COM/APP.JS'></SCRIPT>"
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "AccessiBe" in result["detected_overlay"]
 
     def test_timeout_returns_timeout_status(self) -> None:
-        """A requests.Timeout should result in status='Timeout'."""
-        import requests as req
-
-        with patch(
-            "requests.get",
-            side_effect=req.exceptions.Timeout(),
-        ):
-            result = scan_domain("https://example.com")
+        """A timeout should result in status='Timeout'."""
+        result = self._scan(
+            self._make_fetch(
+                status_code=None,
+                outcome=OUTCOME_TIMEOUT,
+                error="connection or read timed out",
+            )
+        )
         assert result["status"] == "Timeout"
-        assert result["detected_overlay"] == "None Found"
+        assert result["detected_overlay"] == "Not determined"
 
     def test_connection_error_returns_conn_error_status(self) -> None:
-        """A RequestException (e.g. connection refused) → status='Conn Error'."""
-        import requests as req
-
-        with patch(
-            "requests.get",
-            side_effect=req.exceptions.RequestException("refused"),
-        ):
-            result = scan_domain("https://example.com")
+        """A connection failure should produce status='Conn Error'."""
+        result = self._scan(
+            self._make_fetch(
+                status_code=None,
+                outcome=OUTCOME_CONNECTION_ERROR,
+                error="connection failed",
+            )
+        )
         assert result["status"] == "Conn Error"
 
     def test_unexpected_exception_returns_error_status(self) -> None:
         """An unexpected exception should produce status='Error'."""
-        with patch("requests.get", side_effect=RuntimeError("boom")):
+        with patch.object(fo, "safe_fetch", side_effect=RuntimeError("boom")):
             result = scan_domain("https://example.com")
         assert result["status"] == "Error"
+        assert "boom" in result["error"]
 
-    def test_non_public_host_is_blocked(self, monkeypatch) -> None:
-        """A private address should be blocked before any request is made."""
-        monkeypatch.setattr(fo, "is_public_host", lambda host: False)
-        with patch("requests.get") as mock_get:
-            result = scan_domain("http://127.0.0.1")
-        mock_get.assert_not_called()
+    def test_non_public_host_is_blocked(self) -> None:
+        """A private address should be blocked by the shared fetch layer."""
+        fetched = self._make_fetch(
+            status_code=None,
+            outcome=OUTCOME_PRIVATE,
+            error="private destination",
+        )
+        result = self._scan(fetched)
         assert result["status"] == "Blocked"
+        assert result["outcome"] == OUTCOME_PRIVATE
 
     def test_non_200_status_code_is_recorded(self) -> None:
         """A 404 response status code should be stored in result['status']."""
-        html = "<html><body>Not found</body></html>"
-        with patch(
-            "requests.get",
-            return_value=self._make_response(html, status_code=404),
-        ):
-            result = scan_domain("https://example.com")
+        result = self._scan(
+            self._make_fetch(
+                html="<html>overlay acsbapp</html>",
+                status_code=404,
+                outcome=OUTCOME_HTTP_ERROR,
+                error="HTTP 404",
+            )
+        )
         assert result["status"] == 404
+        assert result["overlays"] == []
+        assert result["detected_overlay"] == "Not determined"
 
     def test_result_contains_correct_url(self) -> None:
         """The result dict should carry back the requested URL."""
-        html = "<html></html>"
-        with patch("requests.get", return_value=self._make_response(html)):
+        fetched = self._make_fetch("<html></html>")
+        with patch.object(fo, "safe_fetch", return_value=fetched):
             result = scan_domain("https://my-site.example.com")
         assert result["url"] == "https://my-site.example.com"
 
     def test_equalweb_nagishli_signature(self) -> None:
         """EqualWeb is also identified by the 'nagishli' signature."""
         html = '<script src="https://cdn.nagishli.com/app/widget.js"></script>'
-        with patch("requests.get", return_value=self._make_response(html)):
-            result = scan_domain("https://example.com")
+        result = self._scan(self._make_fetch(html))
         assert "EqualWeb" in result["detected_overlay"]
 
 
@@ -779,8 +813,11 @@ class TestMain:
         printed = " ".join(str(c.args) for c in mock_print.call_args_list)
         assert "AccessiBe" in printed
 
-    def test_main_interactive_input(self, tmp_path: Path) -> None:
+    def test_main_interactive_input(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """When sys.argv has no arguments, main() prompts for a source path."""
+        monkeypatch.chdir(tmp_path)
         csv_file = tmp_path / "smoke.csv"
         csv_file.write_text("Domain name\nexample.com\n")
 
@@ -798,8 +835,8 @@ class TestMain:
         ):
             fo.main()
 
-    def test_main_csv_write_ioerror(self, tmp_path: Path) -> None:
-        """An IOError while writing the CSV should print an error (no crash)."""
+    def test_main_csv_write_failure_exits_nonzero(self, tmp_path: Path) -> None:
+        """A CSV write failure should leave the process with a failure status."""
         csv_file = tmp_path / "smoke.csv"
         csv_file.write_text("Domain name\nexample.com\n")
 
@@ -815,10 +852,45 @@ class TestMain:
                 ["find-overlay.py", str(csv_file), "--output", "/no/perm/out.csv"],
             ),
             patch.object(fo, "scan_domain", return_value=scan_result),
-            patch("builtins.open", side_effect=IOError("permission denied")),
-            patch("builtins.print") as mock_print,
+            patch.object(fo, "write_csv_results", return_value=False),
+        ):
+            with pytest.raises(SystemExit) as exc_info:
+                fo.main()
+
+        assert exc_info.value.code == 1
+
+    def test_main_limit_uses_input_order(self, tmp_path: Path) -> None:
+        """--limit should select the first URLs in the source, not sorted ones."""
+        source = tmp_path / "ordered.txt"
+        source.write_text("zeta.example\nalpha.example\n")
+        seen: list[str] = []
+
+        def fake_scan(url: str) -> dict:
+            """Record the URL and return a minimal scan result."""
+            seen.append(url)
+            return {
+                "url": url,
+                "status": 200,
+                "detected_overlay": "None Found",
+                "other_widgets": "",
+            }
+
+        with (
+            patch(
+                "sys.argv",
+                ["find-overlay.py", str(source), "--limit", "1", "--no-csv"],
+            ),
+            patch.object(fo, "scan_domain", side_effect=fake_scan),
         ):
             fo.main()
 
-        printed = " ".join(str(c.args) for c in mock_print.call_args_list)
-        assert "Error" in printed
+        assert seen == ["https://zeta.example"]
+
+    def test_main_empty_source_exits_nonzero(self, tmp_path: Path) -> None:
+        """An input list with no usable URLs fails instead of writing empty output."""
+        empty = tmp_path / "empty.txt"
+        empty.write_text("\n\n", encoding="utf-8")
+        with patch("sys.argv", ["find-overlay.py", str(empty), "--no-csv"]):
+            with pytest.raises(SystemExit) as exc_info:
+                fo.main()
+        assert exc_info.value.code == 1

@@ -15,10 +15,11 @@
       <p class="brand">Find Overlays</p>
       <nav aria-label="Primary">
         <ul>
-          <li><a href="#findings">Findings</a></li>
-          <li><a href="#changes">Changes</a></li>
-          <li><a href="#concerns">Concerns</a></li>
-          <li><a href="#request">Request a scan</a></li>
+          <li><a href="#findings">Current monitoring</a></li>
+          <li><a href="#changes">Change history</a></li>
+          <li><a href="reports/index.html">Requested scans</a></li>
+          <li><a href="#scan-request">Request a scan</a></li>
+          <li><a href="#method-heading">Methodology</a></li>
         </ul>
       </nav>
     </div>
@@ -27,9 +28,10 @@
   <main id="main" class="wrap">
     <h1>Accessibility overlay scan results</h1>
     <p class="lede">
-      This site lists public websites that were submitted for review and whether
-      their HTML references a known accessibility overlay product. It records
-      the dates those findings change and the overlay asset versions it can see.
+      This site lists public websites in the curated monitoring list or submitted
+      through a public scan request, and whether their HTML references a known
+      accessibility overlay product. It records the dates those findings change
+      and the overlay asset versions it can see.
     </p>
     <p class="notice">
       <strong>A finding is a signal, not a verdict.</strong> An overlay reference
@@ -37,10 +39,30 @@
       prove it is accessible. This project does not test WCAG conformance.
     </p>
 
+    <section id="scan-request" class="request-callout"
+             aria-labelledby="scan-request-heading">
+      <h2 id="scan-request-heading">Scan websites for accessibility overlays</h2>
+      <p>
+        Anyone with a GitHub account can submit up to 100 publicly accessible
+        websites for an automated overlay scan. Results are public and linked
+        from the GitHub issue.
+      </p>
+      <p>
+        <a class="request-link"
+           href="https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml">
+          Request a scan
+        </a>
+      </p>
+      <p class="meta">
+        A requested scan does not add a site to the recurring monitoring list.
+        See <a href="reports/index.html">requested scans</a>.
+      </p>
+    </section>
+
     <section aria-labelledby="latest-heading">
       <h2 id="latest-heading">Latest scan</h2>
       <p>Scan date: <time datetime="2026-11-16">2026-11-16</time>.
-        Built <time datetime="2026-11-16T13:50:03.571655+00:00">2026-11-16T13:50:03.571655+00:00</time>.</p>
+        Built <time datetime="2026-11-19T17:33:29.458931+00:00">2026-11-19T17:33:29.458931+00:00</time>.</p>
       <ul class="stats"><li class="stat"><span class="stat-label">Sites scanned</span><strong class="stat-value">12</strong></li><li class="stat"><span class="stat-label">Sites with overlays</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Overlay occurrences</span><strong class="stat-value">2</strong></li><li class="stat"><span class="stat-label">Non-200 results</span><strong class="stat-value">2</strong></li></ul>
     </section>
 
@@ -77,11 +99,11 @@
 <tr><th scope="row"><a href="https://apple.com" rel="noopener noreferrer">apple.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://bbc.co.uk" rel="noopener noreferrer">bbc.co.uk</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://cnn.com" rel="noopener noreferrer">cnn.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
-<tr><th scope="row"><a href="https://facebook.com" rel="noopener noreferrer">facebook.com</a></th><td><span class="status warn">400</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
+<tr><th scope="row"><a href="https://facebook.com" rel="noopener noreferrer">facebook.com</a></th><td><span class="status warn">400</span></td><td><span class="none">Not determined</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://google.com" rel="noopener noreferrer">google.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
-<tr><th scope="row"><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">UserWay <span class="version unknown">version unknown</span> <a class="evidence" href="https://cdn.userway.org/widget.js" rel="noopener noreferrer" aria-label="Evidence for UserWay">asset</a></span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
-<tr><th scope="row"><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></th><td><span class="status warn">403</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
-<tr><th scope="row"><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">AudioEye <span class="version unknown">version unknown</span> <a class="evidence" href="https://wsmcdn.audioeye.com/aem.js" rel="noopener noreferrer" aria-label="Evidence for AudioEye">asset</a></span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
+<tr><th scope="row"><a href="https://independencemo.gov" rel="noopener noreferrer">independencemo.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">UserWay <span class="version unknown">version unknown</span> <a class="evidence" href="https://cdn.userway.org/widget.js" rel="noopener noreferrer">Asset for UserWay</a></span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
+<tr><th scope="row"><a href="https://nytimes.com" rel="noopener noreferrer">nytimes.com</a></th><td><span class="status warn">403</span></td><td><span class="none">Not determined</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
+<tr><th scope="row"><a href="https://syracuseut.gov" rel="noopener noreferrer">syracuseut.gov</a></th><td><span class="status ok">200</span></td><td><span class="overlay">AudioEye <span class="version unknown">version unknown</span> <a class="evidence" href="https://wsmcdn.audioeye.com/aem.js" rel="noopener noreferrer">Asset for AudioEye</a></span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://twitter.com" rel="noopener noreferrer">twitter.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://wikipedia.org" rel="noopener noreferrer">wikipedia.org</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
 <tr><th scope="row"><a href="https://www.microsoft.com" rel="noopener noreferrer">www.microsoft.com</a></th><td><span class="status ok">200</span></td><td><span class="none">None found</span></td><td>2026-11-09</td><td>2026-11-16</td></tr>
@@ -181,13 +203,12 @@
     </section>
 
     <section id="request" aria-labelledby="request-heading">
-      <h2 id="request-heading">Request a review</h2>
+      <h2 id="request-heading">Request a scan or correct a finding</h2>
       <p>
-        Submit a site through the
+        Submit up to 100 public websites through the
         <a href="https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml">scan request form</a>.
-        Requests require confirmation that you are authorised to ask for the
-        scan and that you understand the results will be public. A maintainer
-        reviews requests before they enter the scan list.
+        No maintainer approval is required. The issue title must begin with
+        <code>SCAN:</code>.
       </p>
       <p>
         To correct a finding, open a regular issue with the site URL and the

@@ -25,8 +25,8 @@ scans.
 | Public accessibility statement | This file |
 | Target standard | WCAG 2.2 Level AA for published web content; equivalent non-web principles for the CLI |
 | Additional requirements | None identified. Users may apply EN 301 549 or Section 508 to reports they publish. |
-| Last reviewed | 2026-11-09 |
-| Next review due | 2027-11-09, or the next release that changes console or CSV output |
+| Last reviewed | 2026-11-19 |
+| Next review due | 2027-11-19, or the next release that changes console, CSV, or issue-report output |
 
 ## 2. Commitment
 
@@ -56,9 +56,10 @@ We aim to:
   output, summaries, and error messages.
 - Generated CSV files and any report derived from them by this project.
 - The static GitHub Pages site in `site/`, including its tables, filter,
-  history, and data downloads.
-- The text of the scan request issue form, to the extent the project controls
-  it.
+  history, data downloads, the requested-scans index, and individual issue
+  reports.
+- The text of the scan request issue form and the issue-scan workflow's public
+  comments, to the extent the project controls them.
 - Repository documentation: `README.md`, this file, `AGENTS.md`,
   `PYTHON_GUIDANCE.md`, `SBOM.md`, and sample data.
 - Markdown documentation as rendered by GitHub, to the extent the source
@@ -81,7 +82,7 @@ assessed.
 
 | Dependency or content | User task | Owner | Accessibility impact | Escalation |
 |---|---|---|---|---|
-| `requests` / `urllib3` | Fetch pages and sitemaps | Python ecosystem | None directly; errors become text statuses | Report upstream if an error message becomes unusable |
+| `urllib3` / `certifi` | Fetch pages and sitemaps with TLS verification | Python ecosystem | None directly; errors become text statuses | Report upstream if an error message becomes unusable |
 | GitHub | Read docs, report issues | GitHub | Rendered documentation and the issue form | Use an alternative contact route if GitHub is inaccessible |
 | Scanned sites | Provide content to scan | Site owners | Outside project control | Report to the site owner |
 
@@ -131,9 +132,11 @@ colour or positioning semantics, it remains readable under those preferences.
 
 ### Output files
 
-- CSV files are UTF-8, one row per URL, with stable column names:
+- Scanner CSV files are UTF-8, one row per URL, with stable column names:
   `url`, `status`, `detected_overlay`, `overlay_versions`, `other_widgets`
   (or `url` and `detected_overlay` with `--simple`).
+- Issue-report CSV files add `outcome` and `error` so that rejected and
+  uninspected entries remain distinguishable. The scanner schema is unchanged.
 - The default console summary is linear text: total scanned, status counts,
   overlay counts, and the percentage with overlays.
 
@@ -155,6 +158,25 @@ from a template and committed data. It aims to provide:
 - no third-party scripts, tracking, or external fonts.
 
 The generated JSON files are downloads, not the primary way to read findings.
+
+### Requested issue scans
+
+Each `SCAN:` issue gets a stable report at
+`site/reports/issues/issue-<number>/index.html` and timestamped copies of each
+run. The report aims to provide:
+
+- one H1, a skip link, and a labelled navigation;
+- summary counts as text, not colour;
+- a findings table with a caption, column headers, and row headers;
+- explicit outcomes for every submitted address, including rejected entries and
+  sites whose overlay status is unknown because the scan failed;
+- evidence links whose visible text is included in the accessible name;
+- no JavaScript requirement for reading the report; and
+- the same light/dark and responsive styling as the monitoring site.
+
+The requested-scans index lists recent issue reports without JavaScript. It is
+bounded to the most recent 100 reports; older reports remain linked from their
+GitHub issues.
 
 ### Browser and assistive technology matrix
 
@@ -226,22 +248,24 @@ Before opening a pull request:
 
 | Tool or workflow | Version | Scope | Trigger | Status |
 |---|---|---|---|---|
-| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, site builder, and CLI tests | Local / pre-PR | 87 tests passing on 2026-11-09 |
-| `flake8` | 7.5.0 (7.4.1 on Python 3.10) | Style and lint, 88-character lines | Local / pre-PR | Passing on 2026-11-09 |
-| `axe-core` | 4.10.2 | Static site at 360px and 1280px | Manual local run | 0 violations on 2026-11-09; not in CI |
-| GitHub Actions | — | Tests/security scans and Pages deployment | Push, PR, schedule | Configured; no accessibility scanner yet |
+| `pytest` | 9.2.0 (from `uv.lock`) | Parser, scanner, URL safety, issue workflow, report, and site builder tests | Local / pre-PR and GitHub Actions | 199 tests passing on 2026-11-19 |
+| `flake8` | 7.5.0 (7.4.1 on Python 3.10) | Style and lint, 88-character lines | Local / pre-PR and GitHub Actions | Passing on 2026-11-19 |
+| `axe-core` | 4.11.4 | Homepage, requested-scans index, sample issue report, and run history at 360px and 1280px | Manual local run | 0 violations on 2026-11-19; not in CI |
+| GitHub Actions | — | Tests, lint, Bandit, dependency audit, security scans, and Pages deployment | Push, PR, schedule | Configured; no accessibility scanner in CI yet |
 
 Commands:
 
 ```bash
 uv run pytest
-uv run flake8 find-overlay.py scripts tests
+uv run flake8 find-overlay.py overlay_safety.py scripts tests
 ```
 
 Automated checks do not test accessibility by themselves. A manual local
-axe-core 4.10.2 run against the static site at 360px and 1280px reported no
-violations on 2026-11-09. axe-core is not wired into CI yet; add it together
-with a manual review before claiming the site has been evaluated.
+axe-core 4.11.4 run against the homepage, requested-scans index, a sample issue
+report, and a run-history page reported no violations on 2026-11-19 at 360px
+and 1280px. axe-core is not wired into CI yet, and keyboard and screen-reader
+checks still need to be performed before claiming the new reports have been
+fully evaluated.
 
 ### Manual checks
 
@@ -254,7 +278,9 @@ with a manual review before claiming the site has been evaluated.
 | Check redirected output on Windows with non-ASCII input | Not yet performed |
 | Keyboard-only run, including cancelling with `Ctrl+C` | Not yet performed |
 | Keyboard-only pass through the Pages site, including the filter | Not yet performed |
+| Keyboard-only pass through an issue report and the requested-scans index | Not yet performed |
 | Screen-reader pass through the findings and changes tables | Not yet performed |
+| axe-core pass over an issue report, history page, and requested-scans index | 0 violations on 2026-11-19 at 360px and 1280px |
 | 200% text resize and 400% zoom on the Pages site | Not yet performed |
 | Forced-colours and high-contrast review of the Pages site | Not yet performed |
 
@@ -320,12 +346,16 @@ precedence over feature work.
 
 | Limitation | Severity | Impact | Workaround | Tracking |
 |---|---|---|---|---|
-| No recorded screen-reader testing | Moderate | Support is unverified, not known-good | Output is plain text; redirect to a file and read with your usual tools | No issue yet |
-| Pages site not yet tested with assistive technology | Moderate | Site support is unverified, not known-good | Read the data tables directly; report barriers | No issue yet |
+| No recorded screen-reader testing | Moderate | Support is unverified, not known-good | Output is plain text; issue reports are semantic HTML; redirect output to a file and read with your usual tools | No issue yet |
+| Pages site and issue reports not yet tested with assistive technology | Moderate | Site support is unverified, not known-good | Read the data tables directly; report barriers | No issue yet |
 | Fixed-width progress table | Minor | Long URLs wrap and misalign columns | Use the `|` separators or the CSV file | No issue yet |
-| Errors print to stdout and the exit status is 0 | Moderate | Failures are easy to miss when piping or automating | Read the full output; check for "Error" | No issue yet |
+| Site-level scan failures are status values, not exit codes | Moderate | A completed batch can contain failed sites | Read the status column or the JSON `outcome` field; source and write failures do exit nonzero | No issue yet |
 | Overlay versions are best-effort | Moderate | A version may be missing or wrong | Treat versions as indicators; check the evidence link | No issue yet |
 | Only initial HTML is scanned | Moderate | Runtime-injected overlays can be missed | Treat a clean result as “not observed”, not proof of absence | No issue yet |
+| Issue scans inspect only public HTTP(S) on ports 80 and 443 | Moderate | Sites on other ports cannot be requested | Use the command-line tool locally if the site is yours | No issue yet |
+| Issue reports may have unknown overlay status | Moderate | Timeouts, blocks, and HTTP errors are not clean results | Read the HTTP result and the “Not determined” label | No issue yet |
+| Issue requests are capped at 100 distinct URLs and a 20-minute scan budget | Moderate | Large lists and very slow sites may be skipped | Split the request or run the CLI locally | No issue yet |
+| Any GitHub account can request a public scan | Moderate | Workflow minutes and public reports can be used by anyone | Scans are serialized, time-budgeted, and limited to public HTTP(S); report failures to the maintainer | No issue yet |
 | Site data changes only when a scan runs | Minor | Findings can be up to a week old | Check the scan date and history | No issue yet |
 | axe-core is not in CI for the site | Moderate | Structural regressions may go unnoticed | Manual axe-core, keyboard, and screen-reader review | No issue yet |
 | Redirected output on Windows may fail on non-ASCII input | Moderate | A scan can end with `UnicodeEncodeError` | Set `PYTHONIOENCODING=utf-8` | No issue yet |
@@ -372,6 +402,8 @@ accessibility metrics and must not be presented as such.
 | 2026-11-09 | Initial version, drafted alongside a code review | Pending maintainer review |
 | 2026-11-09 | Added the public Pages site, scan requests, and history to scope | Pending maintainer review |
 | 2026-11-09 | Manual axe-core run at 360px and 1280px reported no violations | Pending maintainer review |
+| 2026-11-19 | Added public issue-driven scans, safe URL validation, issue reports, and the requested-scans index | Pending maintainer review |
+| 2026-11-19 | axe-core 4.11.4 reported 0 violations for the homepage, index, sample report, and history at 360px and 1280px | Pending maintainer review |
 
 ## 16. References
 
@@ -388,5 +420,6 @@ accessibility metrics and must not be presented as such.
 ## AI disclosure
 
 This file was drafted with AI assistance (DeepSeek via DeepSeek Harness) on
-2026-11-09. It requires human review before it is relied on. The scanner itself
-contains no AI and sends no scan results to third parties.
+2026-11-09 and updated on 2026-11-19. It requires human review before it is
+relied on. The scanner itself contains no AI and sends no scan results to third
+parties.

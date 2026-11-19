@@ -38,7 +38,7 @@ jobs:
           enable_code_security: "true"
           fail_on_severity: "high"
           python_version: "3.12"
-          scan_path: "find-overlay.py"
+          scan_path: "."
 
       - name: Run Gitleaks
         uses: huntridge-labs/argus/.github/actions/scanner-gitleaks@eec3626bebc706dd4225eeec1c55e6f623c20c5f # 1.14.2

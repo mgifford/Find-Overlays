@@ -111,3 +111,33 @@ class TestMergeChanges:
         }
         merged = build_site.merge_changes([old], [new])
         assert merged == [new, old]
+
+
+class TestOverlayCell:
+    """Tests for the monitoring table's overlay cell."""
+
+    def test_successful_scan_without_overlay_is_clean(self) -> None:
+        """A successful scan with no overlay is reported as none found."""
+        cell = build_site.overlay_cell({"status": 200, "overlays": []})
+        assert "None found" in cell
+
+    def test_failed_scan_is_not_reported_as_clean(self) -> None:
+        """A failed or non-2xx scan has an unknown overlay status."""
+        cell = build_site.overlay_cell({"status": 403, "overlays": []})
+        assert "Not determined" in cell
+        assert "None found" not in cell
+
+    def test_evidence_link_contains_visible_label(self) -> None:
+        """The visible evidence label is part of the accessible name."""
+        cell = build_site.overlay_cell({
+            "status": 200,
+            "overlays": [
+                {
+                    "name": "UserWay",
+                    "version": "1.0",
+                    "evidence": "https://cdn.userway.org/widget.js",
+                }
+            ],
+        })
+        assert "Asset for UserWay" in cell
+        assert "Evidence for" not in cell

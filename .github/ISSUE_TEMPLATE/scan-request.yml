@@ -1,42 +1,55 @@
-name: Scan request
-description: Ask for a public website to be reviewed for accessibility overlay use.
-title: "[Scan request] "
-labels: ["scan-request", "needs-triage"]
+name: Scan websites for accessibility overlays
+description: >
+  Request an automatic scan of up to 100
+  publicly accessible websites.
+title: "SCAN: "
+labels: []
 body:
   - type: markdown
     attributes:
       value: |
-        Use this form to ask for a public website to be added to the scan.
-        Results are published on the public Find Overlays site.
+        ## Accessibility overlay scan
 
-        A maintainer reviews every request. Requests for private, internal, or
-        non-public systems cannot be accepted.
+        Enter up to 100 public website addresses.
+
+        One address per line.
+
+        Both full URLs and bare domains are supported.
+
+        Examples:
+        - example.gov
+        - https://example.org/
+        - https://example.com/accessibility
+
+        The scan begins automatically when the issue is submitted.
+
+        Results will be posted to this issue and published on GitHub Pages.
+
+        This tool detects references to known accessibility overlay products.
+        It does not assess WCAG conformance. Requests and results are public.
+
   - type: textarea
     id: urls
     attributes:
       label: Site URLs
-      description: One public http(s) URL per line, up to 10. Do not include private or internal hosts.
+      description: >
+        One public URL or domain per line.
+        Maximum 100 distinct addresses.
       placeholder: |
-        https://example.org
-        https://example.org/accessibility
+        example.gov
+        example.org
+        https://example.com/
     validations:
       required: true
+
   - type: input
     id: organization
     attributes:
       label: Organization or context
-      description: Optional. Who operates the site, or why it is relevant?
+      description: Optional description of these sites.
+
   - type: textarea
     id: context
     attributes:
       label: Additional context
-      description: Optional. Include anything that would help review the request.
-  - type: checkboxes
-    id: confirmation
-    attributes:
-      label: Confirmation
-      options:
-        - label: I am authorised to request a scan of these sites, or this is a public-interest request for a publicly reachable site.
-          required: true
-        - label: I understand that the URLs and scan findings will be published publicly.
-          required: true
+      description: Optional information about the scan.

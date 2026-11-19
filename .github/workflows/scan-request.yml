@@ -1,0 +1,232 @@
+name: Scan Request
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: issue-scan-execution
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    name: Scan requested websites
+    if: >
+      github.event.issue.state == 'open' &&
+      startsWith(github.event.issue.title, 'SCAN:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --no-dev
+
+      - name: Prepare request
+        id: prepare
+        run: |
+          uv run python scripts/issue_scan.py prepare \
+            --event "$GITHUB_EVENT_PATH" \
+            --request request.json \
+            --urls requested-sites.txt
+
+      - name: Create empty scan result
+        if: >
+          steps.prepare.outputs.scan_needed != 'true' &&
+          steps.prepare.outputs.reuse != 'true'
+        run: uv run python scripts/issue_scan.py empty --output scan.json
+
+      - name: Scan accepted websites
+        if: steps.prepare.outputs.scan_needed == 'true'
+        run: |
+          uv run find-overlay.py requested-sites.txt \
+            --json scan.json \
+            --no-csv \
+            --time-budget 1200 \
+            --delay 0.25
+
+      - name: Render issue report
+        if: steps.prepare.outputs.reuse != 'true'
+        env:
+          PAGES_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          uv run python scripts/render_issue_report.py render \
+            --request request.json \
+            --scan scan.json \
+            --artifact issue-report \
+            --site site \
+            --pages-base-url "$PAGES_BASE_URL"
+
+      - name: Record report reuse
+        if: steps.prepare.outputs.reuse == 'true'
+        run: |
+          uv run python scripts/issue_scan.py reuse \
+            --request request.json \
+            --artifact issue-report
+
+      - name: Upload issue scan artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: issue-scan-report
+          path: |
+            issue-report/
+            request.json
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish scan results
+    needs: scan
+    if: needs.scan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --no-dev
+
+      - name: Download issue scan artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: issue-scan-report
+          path: artifact
+
+      - name: Publish report
+        id: publish
+        env:
+          PAGES_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          uv run python scripts/render_issue_report.py publish \
+            --request artifact/request.json \
+            --artifact artifact/issue-report \
+            --site site \
+            --comment issue-comment.md \
+            --pages-base-url "$PAGES_BASE_URL"
+
+      - name: Commit report
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/reports
+          if git diff --cached --quiet; then
+            echo "No report changes to commit."
+            exit 0
+          fi
+          git commit -m "Publish issue #${ISSUE_NUMBER} scan report [skip ci]"
+          pushed=false
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              pushed=true
+              break
+            fi
+            sleep $((attempt * 2))
+            if ! git pull --rebase origin main; then
+              if ! git rebase --abort; then
+                echo "No rebase to abort."
+              fi
+              echo "::error::Could not rebase the report onto the latest main."
+              exit 1
+            fi
+          done
+          if [ "$pushed" != "true" ]; then
+            echo "::error::Could not push the issue report after 3 attempts."
+            exit 1
+          fi
+
+      - name: Configure Pages
+        if: steps.publish.outputs.changed == 'true'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        if: steps.publish.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+      - name: Deploy Pages
+        id: deployment
+        if: steps.publish.outputs.changed == 'true'
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body-file issue-comment.md
+
+      - name: Close successful request
+        if: steps.publish.outputs.close_issue == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue close "$ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --reason completed
+
+  notify-failure:
+    name: Report scan failure
+    needs: [scan, publish]
+    if: >
+      failure() &&
+      github.event.issue.state == 'open' &&
+      startsWith(github.event.issue.title, 'SCAN:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+
+    steps:
+      - name: Comment failure on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STAGE: ${{ needs.publish.result == 'failure' && 'publication' || 'validation or scanning' }}
+        run: |
+          body=$(printf '## Scan failed\n\nThe %s stage did not complete. The issue remains open. Edit or reopen it to try again.\n\n[View the failed run](%s)\n' "$STAGE" "$RUN_URL")
+          gh issue comment "$ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "$body"

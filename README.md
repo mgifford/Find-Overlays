@@ -23,16 +23,32 @@ Results from the maintained scan list in `data/sites.csv` are published at
 <https://mgifford.github.io/Find-Overlays/>. The site shows current findings,
 the overlay versions it can see, and a change log with the date of each change.
 
-To ask for a site to be reviewed, use the
-[scan request form](https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml).
-Requests are public, require authorisation confirmation, and are triaged by a
-maintainer before they enter the scan queue.
+The same site also publishes one-time [requested scans](site/reports/index.html).
+A request does not add a site to the recurring monitoring list.
+
+## Request an overlay scan
+
+Anyone with a GitHub account can request an automated scan of publicly
+available websites. No maintainer approval or label is required.
+
+1. Open the [scan request form](https://github.com/mgifford/Find-Overlays/issues/new?template=scan-request.yml).
+2. Enter up to 100 websites, one per line. Bare domains such as
+   `example.gov` and full URLs are both accepted.
+3. Submit the issue. Its title must begin with `SCAN:`.
+4. GitHub Actions validates the request and scans the accepted sites.
+5. Results are posted as a comment and published under
+   [`site/reports/`](site/reports/).
+6. Reopen the issue to request a fresh scan.
+
+Requests and results are public. The scanner makes read-only HTTP requests to
+public sites. It does not execute JavaScript, crawl linked pages, or perform a
+WCAG audit.
 
 ---
 
 ## Why this exists
 
-Accessibility overlays remain controversial for well-documented reasons. 
+Accessibility overlays remain controversial for well-documented reasons.
 
 Across the accessibility community, including people with disabilities, practitioners, standards bodies, and legal experts, there is broad agreement on several points:
 
@@ -52,7 +68,7 @@ Find-Overlays exists to make overlay usage **visible**, especially in environmen
 - Procurement and accessibility governance are decentralized
 - Leadership needs factual data before setting policy
 
-You can find more about [concerns with Accessibility Overlays](https://overlayfactsheet.com/) here and from the [2024 Web Almanc](https://almanac.httparchive.org/en/2024/accessibility#user-personalization-widgets-and-overlay-remediation). 
+You can find more about [concerns with Accessibility Overlays](https://overlayfactsheet.com/) here and from the [2024 Web Almanac](https://almanac.httparchive.org/en/2024/accessibility#user-personalization-widgets-and-overlay-remediation).
 
 ---
 
@@ -114,7 +130,7 @@ The detection approach is intentionally conservative. The goal is **signal**, no
 
 ## Installation and usage
 
-> **Note:**  
+> **Note:**
 > The installation and usage instructions below use `uv` for dependency and environment management.
 
 
@@ -176,44 +192,59 @@ uv run find-overlay.py samples/sample-domains.csv --limit 100
 - `--no-csv`: Do not write a CSV file.
 - `--limit <N>`: Limit the number of unique URLs scanned to `N` (applied after
   deduplication). Useful for sampling large lists.
+- `--time-budget <SECONDS>`: Stop starting new scans after a total budget;
+  remaining URLs are recorded as skipped.
+- `--delay <SECONDS>`: Pause between requests (the issue workflow uses 0.25).
 
 ## Input Formats
-The tool accepts two common formats:
-- **Structured CSV**: If headers exist, it looks for a column containing “domain” (e.g., `Domain name`). Automatically cleans data by ignoring email addresses, adding `https://` when missing, and deduplicating domains.
-- **Simple list**: One URL/domain per line, or comma/space‑separated text.
+The command-line tool accepts:
+- **Structured CSV**: a `url`, `website`, `site`, `domain`, or `Domain name`
+  column. It adds `https://` when a scheme is missing and removes duplicates.
+- **XML sitemaps**: `<loc>` values are read with a hardened XML parser.
+- **Simple list**: one URL or domain per line, or comma/space-separated text.
+
+Issue requests are limited to 100 distinct addresses. The command-line tool can
+scan larger lists. Unicode hostnames are converted to IDNA (punycode); malformed
+hostnames, credentials, unsupported schemes, and non-default ports are rejected.
 
 ## Output
 When CSV generation is enabled, the default columns are:
 - `url`: Scanned URL
-- `status`: HTTP status code (e.g., 200, 404)
-- `detected_overlay`: Name(s) of overlay(s) found or `None Found`
+- `status`: HTTP status code (e.g., 200, 404), or a short failure label such as
+  `Timeout`, `DNS Error`, `Blocked`, or `Blocked Redirect`
+- `detected_overlay`: Name(s) of overlay(s) found; `None Found` only when the
+  HTML was inspected; `Not determined` when the scan failed or returned a
+  non-2xx response
 - `overlay_versions`: Best-effort version(s) read from asset URLs, or `unknown`
 - `other_widgets`: Detected common widgets (e.g., Intercom, Zendesk)
 
 The console also prints a summary with status code counts, overlay counts, and the percentage of domains with overlays.
 
+Issue-report CSV files use
+`url,status,outcome,detected_overlay,overlay_versions,other_widgets,error`.
+They include rejected entries and distinguish a failed scan from a clean one.
+
 ## Tips
 - Large sources: prefer sitemaps or deduplicated CSVs to reduce scan time.
 - Network errors/timeouts are counted and shown in the final stats.
 
-### Rate Limiting & Timeouts
-- The scanner uses a per‑request timeout of 10 seconds. Slow or non‑responsive sites will be marked as `Timeout` or `Conn Error` in the results.
-- There is no built‑in rate limiting or concurrency; requests are made sequentially to avoid stressing servers.
-- For very large scans, consider splitting your input file and running multiple smaller batches, or pausing between runs.
-- If you need stricter pacing, you can add a small sleep between requests in `scan_domain` (e.g., `time.sleep(0.25)` after each request).
+### Rate Limiting, Timeouts, and Bounds
 
-## Deactivate
-Exit the virtual environment when you’re done:
-
-```bash
-deactivate
-```
+- The scanner uses a 5-second connection timeout and a 10-second read timeout.
+  These are inactivity limits, not a total scan deadline.
+- Responses are capped at 2 MB. At most five redirects are followed, and each
+  redirect destination is validated before it is requested.
+- Requests are sequential. The issue workflow adds a short delay between
+  requests and a 20-minute scan budget; remaining sites are marked as skipped.
+- For very large lists, split the input into smaller batches. Do not add
+  concurrency without a documented reason.
 
 ## What this tool intentionally does *not* do
 
 - It does **not** claim a site is accessible or inaccessible
 - It does **not** recommend or endorse overlay vendors
 - It does **not** perform automated WCAG audits
+- It does **not** add issue-requested sites to the recurring monitoring list
 - It does **not** track users or collect analytics
 
 This tool is about **visibility and accountability**, not automated compliance.
@@ -222,7 +253,7 @@ This tool is about **visibility and accountability**, not automated compliance.
 
 ## Typical use cases
 
-- Accessibility teams auditing a large portfolio of sites
+- Accessibility teams inventorying overlay use across a large portfolio of sites
 - Government or enterprise organizations setting overlay policies
 - Researchers tracking overlay adoption trends
 - Platform teams validating CMS or theme behavior
@@ -234,8 +265,9 @@ This tool is about **visibility and accountability**, not automated compliance.
 Find-Overlays:
 
 - Is fully open source
-- Runs locally
-- Does not transmit scan results to third parties
+- Runs locally for command-line scans, and in GitHub Actions for issue requests
+- Publishes issue-requested results publicly on GitHub Pages and in the issue
+- Does not send scan results to analytics, advertising, or other third parties
 
 This aligns with the broader accessibility principle that tools should not introduce additional risk, surveillance, or data leakage.
 
@@ -245,17 +277,23 @@ This aligns with the broader accessibility principle that tools should not intro
 Run the same checks locally:
 
 ```bash
-uv run bandit -c pyproject.toml -r find-overlay.py
+uv run flake8 find-overlay.py overlay_safety.py scripts tests
+uv run pytest
+uv run bandit -c pyproject.toml -r find-overlay.py overlay_safety.py scripts
 uv audit
 ```
 
-GitHub Actions runs [Argus](https://github.com/huntridge-labs/argus) scanners on
-every push and pull request, plus a weekly scheduled scan:
+GitHub Actions runs the test suite, linting, and the checks below on every
+push and pull request. The [Argus](https://github.com/huntridge-labs/argus)
+security scanners also run on a weekly schedule:
 
 - **Bandit** for Python security issues
 - **Gitleaks** for committed secrets
 - **OSV-Scanner** for vulnerable dependencies
 - **Dependency review** for vulnerable or disallowed licences in pull requests
+
+The test workflow is defined in
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml).
 
 Findings are uploaded to the repository's Security tab when code scanning is
 available. The workflow is defined in
@@ -263,20 +301,35 @@ available. The workflow is defined in
 
 ## Site automation
 
-- [`data/sites.csv`](data/sites.csv) is the scan queue.
-- [`.github/workflows/queue-scan-request.yml`](.github/workflows/queue-scan-request.yml)
-  adds URLs from approved `scan-request` issues after maintainer review.
+### Recurring monitoring
+
+- [`data/sites.csv`](data/sites.csv) is the curated weekly monitoring list.
+  Maintainers edit it manually; issue requests never modify it.
 - [`.github/workflows/scan-and-publish.yml`](.github/workflows/scan-and-publish.yml)
   scans weekly, on scan-list changes, and on manual dispatch. It commits
   history snapshots and deploys the Pages site.
-- [`scripts/build_site.py`](scripts/build_site.py) merges the latest scan with
-  the previous snapshot and renders the static site.
+- [`scripts/build_site.py`](scripts/build_site.py) merges the latest monitoring
+  scan with the previous snapshot and renders the static site.
 - [`data/providers.json`](data/providers.json) holds sourced provider context
   and links to known concerns.
 
-`site/index.html` and `site/data/` are generated. Edit
+### Requested issue scans
+
+- [`.github/workflows/scan-request.yml`](.github/workflows/scan-request.yml)
+  reacts to `SCAN:` issues, validates the submitted addresses, scans them in a
+  read-only job, and publishes results from a separate write-enabled job.
+- [`scripts/issue_scan.py`](scripts/issue_scan.py) extracts, normalises, and
+  validates submitted addresses. It also applies the 100-address limit and
+  request fingerprint.
+- [`scripts/render_issue_report.py`](scripts/render_issue_report.py) builds the
+  issue report, JSON, CSV, run history, and the public requested-scans index.
+- Issue reports live under `site/reports/issues/issue-<number>/`. They never
+  write to `site/data/latest.json` or `data/sites.csv`.
+
+`site/index.html`, `site/data/`, and `site/reports/` are generated. Edit
 [`site/template.html`](site/template.html), [`site/styles.css`](site/styles.css),
-or [`scripts/build_site.py`](scripts/build_site.py) instead.
+[`scripts/build_site.py`](scripts/build_site.py), or
+[`scripts/render_issue_report.py`](scripts/render_issue_report.py) instead.
 
 ## Accessibility of this tool
 
@@ -286,8 +339,11 @@ CSV, and Pages output rules, known limitations, and how to report a barrier — 
 documented in [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
 Contributions must keep terminal, CSV, and site output screen-reader friendly
-and must not rely on colour alone. The scanner reports overlay use; it does not
-evaluate or certify the accessibility of the sites it scans.
+and must not rely on colour alone. Issue reports use semantic tables, captions,
+scoped headers, a skip link, visible focus, and no JavaScript requirement.
+
+The scanner reports overlay use; it does not evaluate or certify the
+accessibility of the sites it scans.
 
 ## Status and limitations
 
@@ -304,7 +360,7 @@ Open source. See the repository license for details.
 
 ## AI Disclosure
 
-Yes. AI was used in creating this tool. There be dragons! 
+Yes. AI was used in creating this tool. There be dragons!
 
 
 

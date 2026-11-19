@@ -144,8 +144,14 @@ def version_label(version: str) -> str:
 def overlay_cell(result: dict) -> str:
     """Render the overlay column for one result."""
     overlays = result.get("overlays") or []
+    try:
+        status_code = int(result.get("status"))  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        status_code = 0
+    inspected = 200 <= status_code < 300
     if not overlays:
-        return '<span class="none">None found</span>'
+        label = "None found" if inspected else "Not determined"
+        return f'<span class="none">{label}</span>'
     items = []
     for item in overlays:
         name = html.escape(str(item.get("name", "")))
@@ -154,8 +160,8 @@ def overlay_cell(result: dict) -> str:
         if evidence.startswith(("http://", "https://")):
             link = (
                 f' <a class="evidence" href="{html.escape(evidence, quote=True)}" '
-                f'rel="noopener noreferrer" aria-label="Evidence for {name}">'
-                "asset</a>"
+                'rel="noopener noreferrer">'
+                f"Asset for {name}</a>"
             )
         items.append(
             f'<span class="overlay">{name} {version_label(item.get("version", ""))}'

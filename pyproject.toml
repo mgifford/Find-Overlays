@@ -5,8 +5,9 @@ description = "Scan websites for accessibility overlay products and report findi
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "certifi>=2024.2.2",
     "defusedxml>=0.7.1",
-    "requests",
+    "urllib3>=2.0",
 ]
 
 [dependency-groups]
@@ -15,6 +16,7 @@ dev = [
     "flake8",
     "pytest",
     "pytest-cov",
+    "pyyaml>=6.0",
 ]
 
 [build-system]
